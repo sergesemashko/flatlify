@@ -6,12 +6,15 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 const multer = require('multer');
+const uuidv4 = require('uuid/v4');
 
 const content = require('./content');
 const contentType = require('./content-type');
+const currentDate = `${new Date().getMonth() +
+  1}.${new Date().getDate()}.${new Date().getFullYear()}`;
 
 const storage = multer.diskStorage({
-  destination: './static',
+  destination: `./static/${currentDate}`,
   filename(req, file, cb) {
     cb(null, `${file.originalname}`);
   },
@@ -71,6 +74,12 @@ app.prepare().then(() => {
   });
 
   server.post('/_api/content/:type/:slug', (req, res) => {
+    if (req.body['media-data']) {
+      const uuid = uuidv4();
+      content.saveMedia(req.body['media-data'], currentDate, uuid);
+      req.body['media-data'] = uuid;
+    }
+
     return content.save(
       req.params.type,
       req.params.slug,

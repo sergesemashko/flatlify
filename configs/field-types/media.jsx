@@ -83,7 +83,7 @@ export const Renderer = asField(({ fieldState, fieldApi, label, ...props }) => {
   const classes = useStyles();
   
   useEffect(() => {
-    loadMedia(value).then(res => res && setMediaUrl(`/static/${value}`));
+    loadMedia(value).then(res => res && setMediaUrl(`${res}`));
   }, [value])
 
   return (

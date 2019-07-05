@@ -85,14 +85,13 @@ const MediaLibrary = () => {
       <div
         key={index}
         className={classes.card}
-        onClick={() => Router.back()}
         onKeyUp={() => {}}
         role="button"
         tabIndex="0"
         onMouseEnter={() => setCardHover(true)}
         onMouseLeave={() => setCardHover(false)}
       >
-        <img src={`/static/${media}`} className={classes.img} alt='' />
+        <img src={`/${media}`} className={classes.img} alt='' />
         {cardHover && <RemoveIcon className={classes.removeIcon} onClick={() => {
           removeMedia(media);
           mediaList().then(data => setMediaArray(data));

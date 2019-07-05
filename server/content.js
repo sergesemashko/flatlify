@@ -3,8 +3,17 @@ const fs = require('fs');
 const path = require('path');
 
 const save = (contentType, contentName, data, cb) => {
-  const filePath = path.resolve('_content', contentType, contentName + '.json');
+  const filePath = path.resolve('_content', 'article', contentName + '.json');
   fse.outputFile(filePath, data, cb);
+};
+
+const saveMedia = (filename, currentDate, uuid) => {
+  const filePath = path.resolve('_content', 'media', uuid + '.json');
+  const data = JSON.stringify({
+    filename,
+    currentDate,
+  });
+  fse.outputFile(filePath, data);
 };
 
 const load = (contentType, contentSlug, cb) => {
@@ -28,28 +37,37 @@ const listTypes = cb => {
 
 const mediaList = cb => {
   const contentDir = path.resolve('static');
-  fs.readdir(contentDir, (err, files) => {
-    cb(files);
+  const filesArray = [];
+  fs.readdir(contentDir, (err, folders) => {
+    folders.forEach(folder => {
+      const mediaDir = path.resolve('static', folder);
+      fs.readdir(mediaDir, (err, files) => {
+        files.forEach(file => filesArray.push(`static/${folder}/${file}`));
+        cb(filesArray);
+      });
+    });
   });
 };
 
-const getMedia = (mediaName, cb) => {
-  const mediaPath = path.resolve('static', mediaName);
-  fs.stat(mediaPath, (err, stat) => {
-    let checkMedia = false;
+const getMedia = (uuid, cb) => {
+  const filePath = path.resolve('_content', 'media', uuid + '.json');
+  let mediaPath = '';
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    const mediaData = JSON.parse(data);
+    mediaPath = path.resolve('static', mediaData.currentDate, mediaData.filename);
+    fs.stat(mediaPath, (err, stat) => {
+      let checkMedia = '';
+      if (err === null) {
+        checkMedia = `/static/${mediaData.currentDate}/${mediaData.filename}`;
+      }
 
-    if (err === null) {
-      checkMedia = true;
-    }
-
-    cb(checkMedia);
+      cb(checkMedia);
+    });
   });
 };
 
-const removeMedia = (name, cb) => {
-  const path = `static/${name}`;
-
-  fs.unlink(path, err => {
+const removeMedia = (filePath, cb) => {
+  fs.unlink(filePath, err => {
     if (err) {
       console.error(err);
       return false;
@@ -92,4 +110,5 @@ module.exports = {
   removeMedia,
   mediaList,
   getMedia,
+  saveMedia,
 };
