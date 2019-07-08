@@ -7,6 +7,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const multer = require('multer');
 const uuidv4 = require('uuid/v4');
+const queryString = require('querystring');
 
 const content = require('./content');
 const contentType = require('./content-type');
@@ -33,10 +34,17 @@ app.prepare().then(() => {
     });
   });
 
-  server.get('/_api/content/getMedia/:filename', (req, res) => {
-    return content.getMedia(req.params.filename, result => {
-      res.send(result);
-    });
+  server.get('/_api/content/getMedia', (req, res) => {
+    console.log(req.query);
+    if (Array.isArray(req.query.file)) {
+      return content.getMedia(req.query.file, result => {
+        res.send(result);
+      });
+    } else {
+      return content.getMedia([req.query.file], result => {
+        res.send(result);
+      });
+    }
   });
 
   server.get('/_api/content/mediaList', (req, res) => {
@@ -69,15 +77,38 @@ app.prepare().then(() => {
     });
   });
 
-  server.post('/_api/media', upload.single('file'), (req, res) => {
-    return res.send(true);
+  server.post('/_api/media', (req, res) => {
+    const promise = new Promise((resolve, reject) => {
+      upload.array('file', 12)(req, res, err => {
+        console.log('MIDDLEWARE');
+        if (err) {
+          console.log('ERROOOO');
+          console.log(err);
+          reject(err);
+        }
+
+        resolve();
+      });
+    });
+
+    promise
+      .then(() => {
+        console.log('SUCCESS PROMISE');
+        return res.send(true);
+      })
+      .catch(err => {
+        console.log('ERROR PROMISE');
+        return res.status(400).send(true);
+      });
   });
 
   server.post('/_api/content/:type/:slug', (req, res) => {
     if (req.body['media-data']) {
-      const uuid = uuidv4();
-      content.saveMedia(req.body['media-data'], currentDate, uuid);
-      req.body['media-data'] = uuid;
+      req.body['media-data'].forEach((item, index) => {
+        const uuid = uuidv4();
+        content.saveMedia(item, currentDate, uuid);
+        req.body['media-data'][index] = uuid;
+      });
     }
 
     return content.save(

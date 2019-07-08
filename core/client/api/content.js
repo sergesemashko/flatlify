@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'querystring';
 
 const HOST = 'http://localhost:3000';
 
@@ -7,8 +8,15 @@ const load = async (contentType, slug) => {
   return response.data;
 };
 
-const loadMedia = async name => {
-  const response = await axios.get(`${HOST}/_api/content/getMedia/${name}`);
+const loadMedia = async names => {
+  const response = await axios.get(`${HOST}/_api/content/getMedia`, {
+    params: {
+      file: names,
+    },
+    paramsSerializer: params => {
+      return qs.stringify(params);
+    },
+  });
   return response.data;
 };
 

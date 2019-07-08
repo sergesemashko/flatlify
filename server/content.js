@@ -39,31 +39,43 @@ const mediaList = cb => {
   const contentDir = path.resolve('static');
   const filesArray = [];
   fs.readdir(contentDir, (err, folders) => {
-    folders.forEach(folder => {
-      const mediaDir = path.resolve('static', folder);
-      fs.readdir(mediaDir, (err, files) => {
-        files.forEach(file => filesArray.push(`static/${folder}/${file}`));
-        cb(filesArray);
+    const promises = folders.map(folder => {
+      return new Promise((resolve, reject) => {
+        const mediaDir = path.resolve('static', folder);
+        fs.readdir(mediaDir, (err, files) => {
+          files.forEach(file => filesArray.push(`static/${folder}/${file}`));
+          resolve();
+        });
       });
     });
+
+    Promise.all(promises).then(() => cb(filesArray));
   });
 };
 
-const getMedia = (uuid, cb) => {
-  const filePath = path.resolve('_content', 'media', uuid + '.json');
-  let mediaPath = '';
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    const mediaData = JSON.parse(data);
-    mediaPath = path.resolve('static', mediaData.currentDate, mediaData.filename);
-    fs.stat(mediaPath, (err, stat) => {
-      let checkMedia = '';
-      if (err === null) {
-        checkMedia = `/static/${mediaData.currentDate}/${mediaData.filename}`;
-      }
+const getMedia = (uuidArray, cb) => {
+  const mediaList = [];
 
-      cb(checkMedia);
+  const promises = uuidArray.map(uuid => {
+    const filePath = path.resolve('_content', 'media', uuid + '.json');
+    let mediaPath = '';
+    return new Promise((resolve, reject) => {
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        const mediaData = JSON.parse(data);
+        mediaPath = path.resolve('static', mediaData.currentDate, mediaData.filename);
+
+        fs.stat(mediaPath, (err, stat) => {
+          if (err === null) {
+            mediaList.push(`/static/${mediaData.currentDate}/${mediaData.filename}`);
+          }
+
+          resolve();
+        });
+      });
     });
   });
+
+  Promise.all(promises).then(() => cb(mediaList));
 };
 
 const removeMedia = (filePath, cb) => {
