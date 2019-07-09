@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const save = (contentType, contentName, data, cb) => {
-  const filePath = path.resolve('_content', 'article', contentName + '.json');
+  const filePath = path.resolve('_content', contentType, contentName + '.json');
   fse.outputFile(filePath, data, cb);
 };
 
@@ -43,7 +43,9 @@ const mediaList = cb => {
       return new Promise((resolve, reject) => {
         const mediaDir = path.resolve('static', folder);
         fs.readdir(mediaDir, (err, files) => {
-          files.forEach(file => filesArray.push(`static/${folder}/${file}`));
+          files.forEach(file =>
+            filesArray.push({ url: `static/${folder}/${file}`, filename: file }),
+          );
           resolve();
         });
       });

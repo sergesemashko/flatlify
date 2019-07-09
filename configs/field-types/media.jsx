@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Router from 'next/router';
 import { saveMedia, loadMedia } from '../../core/client/api/content';
+import MediaLibrary from '../../core/ui/mediaLibrary';
 import InputLabel from '@material-ui/core/InputLabel';
 import S from 'string';
 import { asField } from 'informed';
@@ -60,6 +60,7 @@ const useStyles = makeStyles({
     height: '100%',
     width: '100%',
     opacity: 0,
+    cursor: 'pointer',
   },
   removeIcon: {
     position: 'absolute',
@@ -98,122 +99,115 @@ const useStyles = makeStyles({
   },
 });
 
-const renderSingleDropZone = (setValue, setMediaUrl, setTouched, props, classes) => {
-  const { onBlur, forwardedRef, ...rest } = props;
-  return (
-    <div
-      className={classes.dropZoneWrapper}
-      onClick={() => Router.push('/admin/media')}
-      onKeyUp={() => {}}
-      role="button"
-      tabIndex="0"
-    >
-      <div className={classes.inputWrapper}>
-        <input
-          {...rest}
-          ref={forwardedRef}
-          type="file"
-          onClick={e => e.preventDefault()}
-          onChange={e => handleChange(e, setValue, setMediaUrl)}
-          onBlur={e => {
-            setTouched(true);
-            if (onBlur) {
-              onBlur(e);
-            }
-          }}
-          className={classes.input}
-        />
-        <div className={classes.dragInfoLabel}>DRAG AND DROP A FILE</div>
-        <div className={classes.clickInfoLabel}>(OR CLICK TO BROWSE)</div>
-        <DownloadIcon className={classes.downloadIcon} />
-      </div>
-    </div>
-  );
-};
-
-const renderMultipleDropZone = (setValue, setMediaUrl, setTouched, props, classes) => {
-  const { onBlur, forwardedRef, ...rest } = props;
-  return (
-    <div
-      className={classes.multipleDropZoneWrapper}
-      onClick={() => Router.push('/admin/media')}
-      onKeyUp={() => {}}
-      role="button"
-      tabIndex="0"
-    >
-      <div className={classes.inputWrapper}>
-        <input
-          {...rest}
-          ref={forwardedRef}
-          type="file"
-          multiple={true}
-          onClick={e => e.preventDefault()}
-          onChange={e => handleChange(e, setValue, setMediaUrl)}
-          onBlur={e => {
-            setTouched(true);
-            if (onBlur) {
-              onBlur(e);
-            }
-          }}
-          className={classes.input}
-        />
-        <AddIcon className={classes.addIcon} />
-      </div>
-    </div>
-  );
-};
-
-const renderPreview = (
-  mediaUrl,
-  setMediaUrl,
-  setValue,
-  mediaHover,
-  setMediaHover,
-  value,
-  classes,
-  multiple,
-) => {
-  return (
-    <React.Fragment>
-      {mediaUrl.map((url, urlIndex) => (
-        <div
-          className={multiple ? classes.multiPreviewWrapper : classes.singlePreviewWrapper}
-          onKeyUp={() => {}}
-          role="button"
-          tabIndex="0"
-          key={urlIndex}
-          onMouseEnter={() => setMediaHover(true)}
-          onMouseLeave={() => setMediaHover(false)}
-        >
-          <img src={url} className={classes.imgWrapper} alt="" />
-          {mediaHover && (
-            <RemoveIcon
-              onClick={() =>
-                handleMultipleRemoveMedia(setMediaUrl, setValue, mediaUrl, value, urlIndex)
-              }
-              className={classes.removeIcon}
-            />
-          )}
-        </div>
-      ))}
-    </React.Fragment>
-  );
-};
-
 export const Renderer = asField(({ fieldState, fieldApi, label, ...props }) => {
   const { value } = fieldState;
   const { setValue, setTouched } = fieldApi;
+  const { onBlur, forwardedRef, ...rest } = props;
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [mediaUrl, setMediaUrl] = useState([]);
-  const [mediaHover, setMediaHover] = useState(false);
+  const [mediaHover, setMediaHover] = useState(null);
   const classes = useStyles();
   const multiple = true;
 
   useEffect(() => {
     if (value.length === 0) return;
-    loadMedia(value).then(res => {
-      return res && setMediaUrl(res);
-    });
+    loadMedia(value).then(res => res && setMediaUrl(res));
   }, [value]);
+
+  const SingleDropZone = () => {
+    return (
+      <div
+        className={classes.dropZoneWrapper}
+        onClick={() => setModalIsOpen(true)}
+        onKeyUp={() => {}}
+        role="button"
+        tabIndex="0"
+      >
+        <div className={classes.inputWrapper}>
+          <input
+            {...rest}
+            ref={forwardedRef}
+            type="file"
+            onClick={e => e.preventDefault()}
+            onChange={e => handleChange(e, setValue, setMediaUrl)}
+            onBlur={e => {
+              setTouched(true);
+              if (onBlur) {
+                onBlur(e);
+              }
+            }}
+            className={classes.input}
+          />
+          <div className={classes.dragInfoLabel}>DRAG AND DROP A FILE</div>
+          <div className={classes.clickInfoLabel}>(OR CLICK TO BROWSE)</div>
+          <DownloadIcon className={classes.downloadIcon} />
+        </div>
+      </div>
+    );
+  };
+
+  const MultipleDropZone = () => {
+    return (
+      <div
+        className={classes.multipleDropZoneWrapper}
+        onClick={() => setModalIsOpen(true)}
+        onKeyUp={() => {}}
+        role="button"
+        tabIndex="0"
+      >
+        <div className={classes.inputWrapper}>
+          <input
+            {...rest}
+            ref={forwardedRef}
+            type="file"
+            multiple={true}
+            onClick={e => e.preventDefault()}
+            onChange={e => handleChange(e, setValue, setMediaUrl)}
+            onBlur={e => {
+              setTouched(true);
+              if (onBlur) {
+                onBlur(e);
+              }
+            }}
+            className={classes.input}
+          />
+          <AddIcon className={classes.addIcon} />
+        </div>
+      </div>
+    );
+  };
+
+  const MediaPreview = () => {
+    return (
+      <React.Fragment>
+        {mediaUrl.map((url, urlIndex) => (
+          <div
+            className={multiple ? classes.multiPreviewWrapper : classes.singlePreviewWrapper}
+            onKeyUp={() => {}}
+            role="button"
+            tabIndex="0"
+            key={urlIndex}
+            onMouseEnter={() => {
+              setMediaHover(urlIndex);
+            }}
+            onMouseLeave={() => {
+              setMediaHover(null);
+            }}
+          >
+            <img src={url} className={classes.imgWrapper} alt="" />
+            {mediaHover === urlIndex && (
+              <RemoveIcon
+                onClick={() =>
+                  handleMultipleRemoveMedia(setMediaUrl, setValue, mediaUrl, value, urlIndex)
+                }
+                className={classes.removeIcon}
+              />
+            )}
+          </div>
+        ))}
+      </React.Fragment>
+    );
+  };
 
   return (
     <div className={classes.wrapper}>
@@ -225,21 +219,18 @@ export const Renderer = asField(({ fieldState, fieldApi, label, ...props }) => {
             : classes.singleDropZoneWithPreviewWrapper
         }
       >
-        {multiple
-          ? renderMultipleDropZone(setValue, setMediaUrl, setTouched, props, classes)
-          : mediaUrl.length === 0 &&
-            renderSingleDropZone(setValue, setMediaUrl, setTouched, props, classes)}
-        {renderPreview(
-          mediaUrl,
-          setMediaUrl,
-          setValue,
-          mediaHover,
-          setMediaHover,
-          value,
-          classes,
-          multiple,
-        )}
+        {multiple ? <MultipleDropZone /> : mediaUrl.length === 0 && <SingleDropZone />}
+        <MediaPreview />
       </div>
+      <MediaLibrary
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+        value={value}
+        setValue={setValue}
+        mediaUrl={mediaUrl}
+        setMediaUrl={setMediaUrl}
+        multiple={multiple}
+      />
     </div>
   );
 });

@@ -7,7 +7,6 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const multer = require('multer');
 const uuidv4 = require('uuid/v4');
-const queryString = require('querystring');
 
 const content = require('./content');
 const contentType = require('./content-type');
@@ -34,8 +33,7 @@ app.prepare().then(() => {
     });
   });
 
-  server.get('/_api/content/getMedia', (req, res) => {
-    console.log(req.query);
+  server.get('/_api/content/get-media', (req, res) => {
     if (Array.isArray(req.query.file)) {
       return content.getMedia(req.query.file, result => {
         res.send(result);
@@ -47,7 +45,7 @@ app.prepare().then(() => {
     }
   });
 
-  server.get('/_api/content/mediaList', (req, res) => {
+  server.get('/_api/content/media-list', (req, res) => {
     return content.mediaList(files => {
       res.send(JSON.stringify(files));
     });
@@ -71,19 +69,16 @@ app.prepare().then(() => {
     });
   });
 
-  server.delete('/_api/content/removeMedia', (req, res) => {
+  server.delete('/_api/content/remove-media', (req, res) => {
     return content.removeMedia(req.query.name, result => {
       res.send(result);
     });
   });
 
-  server.post('/_api/media', (req, res) => {
+  server.post('/_api/content/save-media', (req, res) => {
     const promise = new Promise((resolve, reject) => {
       upload.array('file', 12)(req, res, err => {
-        console.log('MIDDLEWARE');
         if (err) {
-          console.log('ERROOOO');
-          console.log(err);
           reject(err);
         }
 
@@ -93,11 +88,9 @@ app.prepare().then(() => {
 
     promise
       .then(() => {
-        console.log('SUCCESS PROMISE');
         return res.send(true);
       })
       .catch(err => {
-        console.log('ERROR PROMISE');
         return res.status(400).send(true);
       });
   });
