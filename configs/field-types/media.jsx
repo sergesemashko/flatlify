@@ -112,7 +112,8 @@ export const Renderer = asField(({ fieldState, fieldApi, label, ...props }) => {
   useEffect(() => {
     if (value.length === 0) return;
     loadMedia(value).then(res => res && setMediaUrl(res));
-  }, [value]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const SingleDropZone = () => {
     return (

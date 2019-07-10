@@ -4,7 +4,7 @@ import { removeMedia, mediaList, saveMedia } from '../../../core/client/api/cont
 import { makeStyles } from '@material-ui/core/styles';
 import RemoveIcon from '@material-ui/icons/Clear';
 
-const useStyles = makeStyles({
+const styles = {
   wrapper: {
     display: 'flex',
     flexDirection: 'column',
@@ -31,7 +31,8 @@ const useStyles = makeStyles({
   cardsWrapper: {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
   },
   label: {
     fontSize: 20,
@@ -74,10 +75,17 @@ const useStyles = makeStyles({
     right: '1%',
     cursor: 'pointer',
   },
-});
+  modalContent: {
+    top: '15%',
+    left: '15%',
+    right: '15%',
+    bottom: '15%',
+    overflow: 'visible',
+  },
+};
 
 const MediaLibrary = props => {
-  const classes = useStyles();
+  const classes = makeStyles(styles)();
   const [cardHover, setCardHover] = useState(null);
   const [mediaArray, setMediaArray] = useState([]);
   const { setModalIsOpen, modalIsOpen, value, setValue, mediaUrl, setMediaUrl, multiple } = props;
@@ -104,27 +112,30 @@ const MediaLibrary = props => {
       <div
         key={index}
         className={classes.card}
-        onClick={() => {
-          const updateValue = [...value];
-          const updateMediaUrl = [...mediaUrl];
-          if (multiple) {
-            updateValue.push(media.filename);
-            updateMediaUrl.push(`/${media.url}`);
-            setValue(updateValue);
-            setMediaUrl(updateMediaUrl);
-          } else {
-            setValue([media.filename]);
-            setMediaUrl([`/${media.url}`]);
-          }
-          setModalIsOpen(false);
-        }}
-        onKeyUp={() => {}}
-        role="button"
-        tabIndex="0"
         onMouseEnter={() => setCardHover(index)}
         onMouseLeave={() => setCardHover(null)}
       >
-        <img src={`/${media.url}`} className={classes.img} alt="" />
+        {/* eslint-disable-next-line */}
+        <img
+          src={`/${media.url}`}
+          className={classes.img}
+          alt=""
+          onKeyUp={() => {}}
+          onClick={() => {
+            const updateValue = [...value];
+            const updateMediaUrl = [...mediaUrl];
+            if (multiple) {
+              updateValue.push(media.filename);
+              updateMediaUrl.push(`/${media.url}`);
+              setValue(updateValue);
+              setMediaUrl(updateMediaUrl);
+            } else {
+              setValue([media.filename]);
+              setMediaUrl([`/${media.url}`]);
+            }
+            setModalIsOpen(false);
+          }}
+        />
         {cardHover === index && (
           <RemoveIcon
             className={classes.removeIcon}
@@ -144,9 +155,8 @@ const MediaLibrary = props => {
       isOpen={modalIsOpen}
       onAfterOpen={() => mediaList().then(data => setMediaArray(data))}
       onRequestClose={() => setModalIsOpen(false)}
-      contentLabel="Example Modal"
       style={{
-        content: { top: '15%', left: '15%', right: '15%', bottom: '15%', overflow: 'visible' },
+        content: styles.modalContent,
       }}
       ariaHideApp={false}
     >

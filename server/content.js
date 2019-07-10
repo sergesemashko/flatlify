@@ -36,15 +36,18 @@ const listTypes = cb => {
 };
 
 const mediaList = cb => {
-  const contentDir = path.resolve('static');
+  const contentDir = path.resolve(process.env.MEDIA_FOLDER);
   const filesArray = [];
   fs.readdir(contentDir, (err, folders) => {
     const promises = folders.map(folder => {
       return new Promise((resolve, reject) => {
-        const mediaDir = path.resolve('static', folder);
+        const mediaDir = path.resolve(process.env.MEDIA_FOLDER, folder);
         fs.readdir(mediaDir, (err, files) => {
           files.forEach(file =>
-            filesArray.push({ url: `static/${folder}/${file}`, filename: file }),
+            filesArray.push({
+              url: `${process.env.MEDIA_FOLDER}/${folder}/${file}`,
+              filename: file,
+            }),
           );
           resolve();
         });
@@ -57,18 +60,24 @@ const mediaList = cb => {
 
 const getMedia = (uuidArray, cb) => {
   const mediaList = [];
-
+  console.log(uuidArray);
   const promises = uuidArray.map(uuid => {
     const filePath = path.resolve('_content', 'media', uuid + '.json');
     let mediaPath = '';
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, data) => {
         const mediaData = JSON.parse(data);
-        mediaPath = path.resolve('static', mediaData.currentDate, mediaData.filename);
+        mediaPath = path.resolve(
+          process.env.MEDIA_FOLDER,
+          mediaData.currentDate,
+          mediaData.filename,
+        );
 
         fs.stat(mediaPath, (err, stat) => {
           if (err === null) {
-            mediaList.push(`/static/${mediaData.currentDate}/${mediaData.filename}`);
+            mediaList.push(
+              `/${process.env.MEDIA_FOLDER}/${mediaData.currentDate}/${mediaData.filename}`,
+            );
           }
 
           resolve();

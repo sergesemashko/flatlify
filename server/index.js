@@ -10,15 +10,19 @@ const uuidv4 = require('uuid/v4');
 
 const content = require('./content');
 const contentType = require('./content-type');
-const currentDate = `${new Date().getMonth() +
-  1}.${new Date().getDate()}.${new Date().getFullYear()}`;
 
-const storage = multer.diskStorage({
-  destination: `./static/${currentDate}`,
-  filename(req, file, cb) {
-    cb(null, `${file.originalname}`);
-  },
-});
+const createStorage = () => {
+  const currentDate = `${new Date().getMonth() +
+    1}.${new Date().getDate()}.${new Date().getFullYear()}`;
+  return multer.diskStorage({
+    destination: `./${process.env.MEDIA_FOLDER}/${currentDate}`,
+    filename(req, file, cb) {
+      cb(null, `${file.originalname}`);
+    },
+  });
+};
+
+const storage = createStorage();
 
 const upload = multer({ storage });
 
@@ -33,7 +37,7 @@ app.prepare().then(() => {
     });
   });
 
-  server.get('/_api/content/get-media', (req, res) => {
+  server.get('/_api/content/media', (req, res) => {
     if (Array.isArray(req.query.file)) {
       return content.getMedia(req.query.file, result => {
         res.send(result);
@@ -69,15 +73,17 @@ app.prepare().then(() => {
     });
   });
 
-  server.delete('/_api/content/remove-media', (req, res) => {
-    return content.removeMedia(req.query.name, result => {
+  server.delete('/_api/content/media', (req, res) => {
+    const path = JSON.parse(req.query.name).url;
+    return content.removeMedia(path, result => {
       res.send(result);
     });
   });
 
-  server.post('/_api/content/save-media', (req, res) => {
+  server.post('/_api/content/media', (req, res) => {
+    const maxFilesCount = 12;
     const promise = new Promise((resolve, reject) => {
-      upload.array('file', 12)(req, res, err => {
+      upload.array('file', maxFilesCount)(req, res, err => {
         if (err) {
           reject(err);
         }
@@ -97,6 +103,9 @@ app.prepare().then(() => {
 
   server.post('/_api/content/:type/:slug', (req, res) => {
     if (req.body['media-data']) {
+      const currentDate = `${new Date().getMonth() +
+        1}.${new Date().getDate()}.${new Date().getFullYear()}`;
+
       req.body['media-data'].forEach((item, index) => {
         const uuid = uuidv4();
         content.saveMedia(item, currentDate, uuid);

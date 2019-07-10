@@ -9,7 +9,7 @@ const load = async (contentType, slug) => {
 };
 
 const loadMedia = async names => {
-  const response = await axios.get(`${HOST}/_api/content/get-media`, {
+  const response = await axios.get(`${HOST}/_api/content/media`, {
     params: {
       file: names,
     },
@@ -26,12 +26,12 @@ const mediaList = async () => {
 };
 
 const removeMedia = async name => {
-  await axios.delete(`${HOST}/_api/content/remove-media`, { params: { name } });
+  await axios.delete(`${HOST}/_api/content/media`, { params: { name } });
   return true;
 };
 
 const saveMedia = async data => {
-  const response = await axios.post(`${HOST}/_api/content/save-media`, data);
+  const response = await axios.post(`${HOST}/_api/content/media`, data);
   return response.data;
 };
 

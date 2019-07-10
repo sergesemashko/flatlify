@@ -4,7 +4,7 @@
   "description": "Flat file NodeJS based CMS",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon server.js --watch server.js",
+    "dev": "cross-env NODE_ENV=development nodemon -r dotenv/config server.js --watch server.js",
     "build": "npm run eslint && next build",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
