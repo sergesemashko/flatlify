@@ -7,6 +7,16 @@ const load = async (contentType, slug) => {
   return response.data;
 };
 
+const create = async (contentType, slug, data) => {
+  const response = await axios.post(`${HOST}/_api/content/${contentType}/${slug}/new`, data);
+  return response.data;
+};
+
+const deleteContent = async (contentType, slug) => {
+  const response = await axios.delete(`${HOST}/_api/content/${contentType}/${slug}`);
+  return response.data;
+};
+
 const save = async (contentType, slug, data) => {
   const response = await axios.post(`${HOST}/_api/content/${contentType}/${slug}`, data);
   return response.data;
@@ -27,4 +37,6 @@ module.exports = {
   load,
   list,
   loadTypeSchema,
+  create,
+  deleteContent,
 };

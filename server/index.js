@@ -37,6 +37,12 @@ app.prepare().then(() => {
     });
   });
 
+  server.delete('/_api/content/:type/:slug', (req, res) => {
+    return content.deleteContent(req.params.type, req.params.slug, data => {
+      res.send();
+    });
+  });
+
   server.post('/_api/content/:type/:slug', (req, res) => {
     console.log(req.body);
     return content.save(
@@ -44,7 +50,19 @@ app.prepare().then(() => {
       req.params.slug,
       JSON.stringify(req.body, null, 2),
       data => {
-        res.send('');
+        res.send(JSON.stringify(data));
+      },
+    );
+  });
+
+  server.post('/_api/content/:type/:slug/new', (req, res) => {
+    console.log(req.body);
+    return content.create(
+      req.params.type,
+      req.params.slug,
+      JSON.stringify(req.body, null, 2),
+      data => {
+        res.send(JSON.stringify(data));
       },
     );
   });

@@ -1,25 +1,26 @@
 import React from 'react';
-import { list } from '../../../core/client/api/content';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Link from 'next/link';
+import Button from '@material-ui/core/Button';
+
+import { list } from '../../../core/client/api/content';
+import ContentListComponent from '../../../core/ui/ContentListComponent';
 
 const ContentList = ({ contentList, contentType }) => {
   return (
-    <List>
-      {contentList.map(entry => (
-        <ListItem key={`list-item-${entry.slug}`}>
-          <Link href={`/admin/content/edit?slug=${entry.slug}&contentType=${contentType}`}>
-            {entry.slug}
-          </Link>
-        </ListItem>
-      ))}
-    </List>
+    <div>
+      <div>Content List</div>
+      <ContentListComponent contentList={contentList} contentType={contentType} />
+
+      <Button type="submit">
+        <Link href={`/admin/content/create?contentType=${contentType}`}>Add new</Link>
+      </Button>
+    </div>
   );
 };
 
 ContentList.getInitialProps = async ({ query }) => {
   const contentList = await list(query.contentType);
+
   return {
     contentList,
     contentType: query.contentType,

@@ -1,5 +1,6 @@
 {
   "type": "article",
   "slug": "test2",
-  "data": "textasdfasdadsfa"
+  "data": "test1",
+  "multi-data": "123412asdfa"
 }
