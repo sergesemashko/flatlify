@@ -8,7 +8,7 @@ const load = async (contentType, slug) => {
 };
 
 const create = async (contentType, slug, data) => {
-  const response = await axios.post(`${HOST}/_api/content/${contentType}/${slug}/new`, data);
+  const response = await axios.post(`${HOST}/_api/content/${contentType}`, { slug, ...data });
   return response.data;
 };
 

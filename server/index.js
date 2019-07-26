@@ -32,7 +32,7 @@ app.prepare().then(() => {
   });
 
   server.get('/_api/content/:type/:slug', (req, res) => {
-    return content.load(req.params.type, req.params.slug, data => {
+    return content.load(req.params.type, req.body.slug, data => {
       res.send(JSON.stringify(data));
     });
   });
@@ -44,7 +44,6 @@ app.prepare().then(() => {
   });
 
   server.post('/_api/content/:type/:slug', (req, res) => {
-    console.log(req.body);
     return content.save(
       req.params.type,
       req.params.slug,
@@ -55,16 +54,10 @@ app.prepare().then(() => {
     );
   });
 
-  server.post('/_api/content/:type/:slug/new', (req, res) => {
-    console.log(req.body);
-    return content.create(
-      req.params.type,
-      req.params.slug,
-      JSON.stringify(req.body, null, 2),
-      data => {
-        res.send(JSON.stringify(data));
-      },
-    );
+  server.post('/_api/content/:type', (req, res) => {
+    return content.create(req.params.type, JSON.stringify(req.body, null, 2), data => {
+      res.send(JSON.stringify(data));
+    });
   });
 
   server.get('*', (req, res) => {

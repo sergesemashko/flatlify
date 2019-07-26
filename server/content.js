@@ -2,7 +2,7 @@ const fse = require('fs-extra');
 const fs = require('fs');
 const path = require('path');
 
-const fileExistError = new Error('This slug name is already taken');
+const fileExistError = new Error({ code: 409, message: 'This name is already taken' });
 
 const save = (contentType, contentName, data, cb) => {
   const parsedData = JSON.parse(String(data));
@@ -21,15 +21,15 @@ const save = (contentType, contentName, data, cb) => {
           fse.outputFile(newFilePath, data, cb);
         });
       } else {
-        console.error(err.code);
         throw err;
       }
     });
   }
 };
 
-const create = (contentType, contentName, data, cb) => {
-  const filePath = path.resolve('_content', contentType, contentName + '.json');
+const create = (contentType, data, cb) => {
+  const parsedData = JSON.parse(String(data));
+  const filePath = path.resolve('_content', contentType, parsedData.slug + '.json');
   fs.stat(filePath, function(err, stat) {
     if (err === null) {
       throw fileExistError;
