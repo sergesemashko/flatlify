@@ -37,19 +37,14 @@ app.prepare().then(() => {
     });
   });
 
-  server.get('/_api/content/media', (req, res) => {
-    if (Array.isArray(req.query.file)) {
-      return content.getMedia(req.query.file, result => {
-        res.send(result);
-      });
-    } else {
-      return content.getMedia([req.query.file], result => {
-        res.send(result);
-      });
-    }
+  server.get('/_api/content/media/:uuid', (req, res) => {
+    const fileUuid = req.params.uuid;
+    return content.getMedia(fileUuid, result => {
+      res.send(result);
+    });
   });
 
-  server.get('/_api/content/media-list', (req, res) => {
+  server.get('/_api/content/media', (req, res) => {
     return content.mediaList(files => {
       res.send(JSON.stringify(files));
     });

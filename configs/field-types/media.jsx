@@ -111,7 +111,15 @@ export const Renderer = asField(({ fieldState, fieldApi, label, ...props }) => {
 
   useEffect(() => {
     if (value.length === 0) return;
-    loadMedia(value).then(res => res && setMediaUrl(res));
+    const updateMediaUrl = [];
+    const promises = value.map(item => {
+      return loadMedia(item).then(res => {
+        if(res) {
+          updateMediaUrl.push(res);
+        }
+      });
+    })
+    Promise.all(promises).then(() => setMediaUrl(updateMediaUrl))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

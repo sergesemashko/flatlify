@@ -58,35 +58,25 @@ const mediaList = cb => {
   });
 };
 
-const getMedia = (uuidArray, cb) => {
-  const mediaList = [];
-  console.log(uuidArray);
-  const promises = uuidArray.map(uuid => {
+const getMedia = (uuid, cb) => {
+  let mediaUrl = '';
+  const promise = new Promise((resolve, reject) => {
     const filePath = path.resolve('_content', 'media', uuid + '.json');
     let mediaPath = '';
-    return new Promise((resolve, reject) => {
-      fs.readFile(filePath, 'utf8', (err, data) => {
-        const mediaData = JSON.parse(data);
-        mediaPath = path.resolve(
-          process.env.MEDIA_FOLDER,
-          mediaData.currentDate,
-          mediaData.filename,
-        );
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      const mediaData = JSON.parse(data);
+      mediaPath = path.resolve(process.env.MEDIA_FOLDER, mediaData.currentDate, mediaData.filename);
 
-        fs.stat(mediaPath, (err, stat) => {
-          if (err === null) {
-            mediaList.push(
-              `/${process.env.MEDIA_FOLDER}/${mediaData.currentDate}/${mediaData.filename}`,
-            );
-          }
+      fs.stat(mediaPath, (err, stat) => {
+        if (err === null) {
+          mediaUrl = `/${process.env.MEDIA_FOLDER}/${mediaData.currentDate}/${mediaData.filename}`;
+        }
 
-          resolve();
-        });
+        resolve();
       });
     });
   });
-
-  Promise.all(promises).then(() => cb(mediaList));
+  promise.then(() => cb(mediaUrl));
 };
 
 const removeMedia = (filePath, cb) => {

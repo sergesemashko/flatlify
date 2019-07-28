@@ -8,20 +8,13 @@ const load = async (contentType, slug) => {
   return response.data;
 };
 
-const loadMedia = async names => {
-  const response = await axios.get(`${HOST}/_api/content/media`, {
-    params: {
-      file: names,
-    },
-    paramsSerializer: params => {
-      return qs.stringify(params);
-    },
-  });
+const loadMedia = async name => {
+  const response = await axios.get(`${HOST}/_api/content/media/${name}`);
   return response.data;
 };
 
 const mediaList = async () => {
-  const response = await axios.get(`${HOST}/_api/content/media-list`);
+  const response = await axios.get(`${HOST}/_api/content/media`);
   return response.data;
 };
 
