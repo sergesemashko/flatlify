@@ -4,7 +4,7 @@
   "description": "Flat file NodeJS based CMS",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon server.js --watch server.js",
+    "dev": "cross-env NODE_ENV=development nodemon -r dotenv/config server.js --watch server.js",
     "build": "npm run eslint && next build",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -36,10 +36,14 @@
     "fs-extra": "^8.0.1",
     "informed": "^2.7.2",
     "isomorphic-fetch": "^2.2.1",
+    "multer": "^1.4.1",
     "next": "^8.1.0",
+    "querystring": "^0.2.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "string": "^3.3.3"
+    "react-modal": "^3.8.2",
+    "string": "^3.3.3",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.4.4",
