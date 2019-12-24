@@ -50,10 +50,18 @@ const deleteContent = (contentType, contentName, cb) => {
   });
 };
 
-const load = (contentType, contentName, cb) => {
-  const filePath = path.resolve('_content', contentType, contentName + '.json');
-  fs.readFile(filePath, (err, data) => {
-    cb(JSON.parse(String(data)));
+const load = (contentType, slug, cb) => {
+  const filePath = path.resolve('_content', contentType, slug + '.json');
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        return reject(err);
+      }
+
+      try {
+      } catch (e) {}
+      cb(JSON.parse(String(data)));
+    });
   });
 };
 

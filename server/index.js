@@ -1,7 +1,7 @@
 const express = require('express');
 const next = require('next');
 const bodyParser = require('body-parser');
-const port = parseInt(process.env.PORT, 10) || 3000;
+const port = parseInt(process.env.PORT, 10) || 3010;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -16,9 +16,15 @@ app.prepare().then(() => {
   server.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
   server.get('/_api/content', (req, res) => {
-    return content.listTypes(files => {
-      res.send(JSON.stringify(files));
-    });
+    return content
+      .listTypes(files => {
+        res.status(200);
+        res.send(JSON.stringify(files));
+      })
+      .catch(error => {
+        res.status(500);
+        res.send(JSON.stringify({ error: error.toString(), message: error.stack }));
+      });
   });
   server.get('/_api/content-type/:type', (req, res) => {
     return contentType.loadSchema(req.params.type, files => {
@@ -32,9 +38,15 @@ app.prepare().then(() => {
   });
 
   server.get('/_api/content/:type/:slug', (req, res) => {
-    return content.load(req.params.type, req.body.slug, data => {
-      res.send(JSON.stringify(data));
-    });
+    console.log(req.params);
+    return content
+      .load(req.params.type, req.params.slug, data => {
+        res.send(JSON.stringify(data));
+      })
+      .catch(error => {
+        res.status(500);
+        res.send(JSON.stringify({ error: error.toString(), message: error.stack }));
+      });
   });
 
   server.delete('/_api/content/:type/:slug', (req, res) => {
