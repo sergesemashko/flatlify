@@ -92,6 +92,7 @@ function readFiles(dirname, cb) {
               console.error(err);
               reject();
             }
+            console.log(content);
             resolve(JSON.parse(content));
           });
         });

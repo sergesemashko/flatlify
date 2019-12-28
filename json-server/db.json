@@ -1,0 +1,48 @@
+{
+  "content-types": [
+    {
+      "views": 0,
+      "id": 1
+    }
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    },
+    {
+      "title": "Asset utilization (Bar charts)",
+      "teaser": "12312",
+      "body": "123123",
+      "published_at": "123123-01-18",
+      "average_note": "123123",
+      "id": 2
+    },
+    {
+      "average_note": 5,
+      "published_at": "2019-12-26T01:31:47.647Z",
+      "commentable": true,
+      "backlinks": [
+        {
+          "date": "2019-12-26T01:27:23.517Z",
+          "url": "http://google.com"
+        }
+      ],
+      "title": "weqwe",
+      "teaser": "qweqwe",
+      "body": "<p>qweqweqw</p>",
+      "id": 3
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

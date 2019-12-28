@@ -1,6 +1,7 @@
 const express = require('express');
 const next = require('next');
 const bodyParser = require('body-parser');
+const { registerGitAPI } = require('./git-api');
 const port = parseInt(process.env.PORT, 10) || 3010;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -15,6 +16,7 @@ app.prepare().then(() => {
   server.use(bodyParser.json()); // support json encoded bodies
   server.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+  registerGitAPI(server);
   server.get('/_api/content', (req, res) => {
     return content
       .listTypes(files => {
@@ -27,6 +29,22 @@ app.prepare().then(() => {
       });
   });
   server.get('/_api/content-type/:type', (req, res) => {
+    return contentType.loadSchema(req.params.type, files => {
+      res.send(JSON.stringify(files));
+    });
+  });
+  server.get('/_api/content-types', (req, res) => {
+    return contentType.getList((error, files) => {
+      if (error) {
+        res.status(500);
+        res.send(JSON.stringify({ error: error.toString(), message: error.stack }));
+        return;
+      }
+      res.status(200);
+      res.send(JSON.stringify(files));
+    });
+  });
+  server.get('/_api/content-types/:type', (req, res) => {
     return contentType.loadSchema(req.params.type, files => {
       res.send(JSON.stringify(files));
     });

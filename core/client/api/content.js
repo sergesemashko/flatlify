@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const HOST = 'http://localhost:3000';
+const HOST = 'http://localhost:3010';
 
 const load = async (contentType, slug) => {
   const response = await axios.get(`${HOST}/_api/content/${contentType}/${slug}`);
