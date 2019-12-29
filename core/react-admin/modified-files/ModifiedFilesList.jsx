@@ -1,19 +1,24 @@
 import { Datagrid, List, TextField } from 'ra-ui-materialui'
 import React from 'react'
-import ResetViewsButton from '../components/ResetViewsButton';
+import GitCommitButton from '../components/GitCommitButton'
+import Toolbar from '@material-ui/core/Toolbar';
+import { setListSelectedIds } from 'react-admin'
 
 const PostListBulkActions = props => (
   <>
-    <ResetViewsButton {...props} />
+    <GitCommitButton {...props} />
   </>
-);
-export const ModifiedFilesList = (props) => (
-  <List
-    {...props}
-    bulkActionButtons={<PostListBulkActions />}
-  >
-    <Datagrid>
-      <TextField source="filepath"/>
-    </Datagrid>
-  </List>
 )
+export const ModifiedFilesList = (props) => {
+  return (
+    <List
+      {...props}
+      actions={<Toolbar />}
+      bulkActionButtons={<PostListBulkActions/>}
+    >
+      <Datagrid>
+        <TextField source="filepath"/>
+      </Datagrid>
+    </List>
+  )
+}

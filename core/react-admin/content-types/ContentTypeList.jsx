@@ -1,10 +1,10 @@
 import { Datagrid, List, TextField } from 'ra-ui-materialui'
 import React from 'react'
-import ResetViewsButton from '../components/ResetViewsButton';
+import GitCommitButton from '../components/GitCommitButton';
 
 const PostListBulkActions = props => (
   <>
-    <ResetViewsButton {...props} />
+    <GitCommitButton {...props} />
   </>
 );
 export const ContentTypeList = (props) => (

@@ -21,7 +21,7 @@ async function status({ root, pattern = './**/*' } = {}) {
   const modifiedFiles = status
     .filter(row => paths.indexOf(row[0]) !== -1)
     .filter(row => row[HEAD] !== row[WORKDIR] || row[HEAD] !== row[STAGE])
-    .map(row => ({ id: row[0], filepath: row[0], statusCodes: row.slice(1) }));
+    .map(row => ({ id: encodeURIComponent(row[0]), filepath: row[0], statusCodes: row.slice(1) }));
 
   console.log(modifiedFiles);
   // const paths = await globby([pattern], { gitignore: true });
@@ -42,18 +42,19 @@ async function status({ root, pattern = './**/*' } = {}) {
 
 // git reset multiple files
 async function checkout(branch, pattern = null) {
-  await git.checkout({ dir: root, ref: branch, pattern });
+  await isoGit.checkout({ dir: root, ref: branch, pattern });
   console.log('done');
   return branch;
 }
 
 // git commit multiple files
-async function commit(files, message, author = {}) {
-  for (let filepath in files) {
-    await git.add({ dir: root, filepath });
+async function commit(files, {message, root, author = {}} = {}) {
+  for (let i = 0; i < files.length; i++) {
+    console.log(root, decodeURIComponent(files[i]));
+    await isoGit.add({ dir: root || './', filepath: decodeURIComponent(files[i]) });
   }
-
-  let sha = await git.commit({
+  console.log(files);
+  let sha = await isoGit.commit({
     dir: root,
     author: {
       name: author.name || undefined,
@@ -68,7 +69,7 @@ async function commit(files, message, author = {}) {
 // git current branch
 
 async function branch() {
-  let branch = await git.currentBranch({ dir: root, fullname: false });
+  let branch = await isoGit.currentBranch({ dir: root, fullname: false });
   console.log(branch);
 
   return branch;

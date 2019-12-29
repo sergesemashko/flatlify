@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Admin, Resource, ListGuesser } from 'react-admin';
-import jsonServerProvider from 'ra-data-json-server';
+import DataProvider from './dataProvider';
 import authProvider from './authProvider';
 import contentTypesActions from './content-types'
 import modifiedFilesActions from './modified-files'
 
-const dataProvider = jsonServerProvider('http://localhost:3000');
+const dataProvider = DataProvider('http://localhost:3000');
 const App = () => {
   const [contentTypes, setContentTypes] = useState([])
   const [ready, setReady] = useState(false)
