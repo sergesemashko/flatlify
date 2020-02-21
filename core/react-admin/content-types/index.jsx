@@ -17,21 +17,31 @@ const ContentTypeTitle = ({ record }) => {
   return <span>Content Type {record ? `"${record.type}"` : ''}</span>
 }
 
+const Fields = () => {
+  return <>
+    <TextInput source="type"  validate={required()} />
+    <SelectInput source="icon" label="icon" choices={[
+      { id: 'BookIcon', name: 'BookIcon' },
+    ]} />
+    <ArrayInput source="fields">
+      <SimpleFormIterator>
+        <TextInput label="Field name" source="title" />
+        <SelectInput source="fieldType" choices={[
+          { id: 'TextInput', name: 'TextInput' },
+          { id: 'RichTextInput', name: 'RichTextInput' },
+        ]} />
+        <BooleanInput label="Is required?" source="isRequired" />
+        <BooleanInput label="Display in list view?" source="_gridDisplay_" />
+      </SimpleFormIterator>
+    </ArrayInput>
+  </>;
+}
+
 export const ContentTypeEdit = (props) => (
   <Edit title={<ContentTypeTitle/>} {...props}>
     <SimpleForm>
       <TextInput disabled source="id"/>
-      <TextInput source="type"  validate={required()} />
-      <ArrayInput source="fields">
-        <SimpleFormIterator>
-          <TextInput label="Field name" source="title" />
-          <SelectInput source="fieldType" choices={[
-            { id: 'TextInput', name: 'TextInput' },
-            { id: 'RichTextInput', name: 'RichTextInput' },
-          ]} />
-          <BooleanInput label="Is required?" source="isRequired" />
-        </SimpleFormIterator>
-      </ArrayInput>
+      <Fields />
     </SimpleForm>
   </Edit>
 )
@@ -39,17 +49,7 @@ export const ContentTypeEdit = (props) => (
 export const ContentTypeCreate = (props) => (
   <Create title="Create a ContentType" {...props}>
     <SimpleForm>
-      <TextInput source="type"  validate={required()} />
-      <ArrayInput source="fields">
-        <SimpleFormIterator>
-          <TextInput label="Field name" source="title" />
-          <SelectInput label="Field type" source="fieldType" choices={[
-            { id: 'TextInput', name: 'TextInput' },
-            { id: 'RichTextInput', name: 'RichTextInput' },
-          ]} />
-          <BooleanInput label="Is required?" source="isRequired" />
-        </SimpleFormIterator>
-      </ArrayInput>
+      <Fields />
     </SimpleForm>
   </Create>
 )

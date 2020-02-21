@@ -77,32 +77,6 @@ const listTypes = cb => {
   });
 };
 
-function readFiles(dirname, cb) {
-  fs.readdir(dirname, function(err, filenames) {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    Promise.all(
-      filenames.map(function(filename) {
-        return new Promise((resolve, reject) => {
-          fs.readFile(path.resolve(dirname, filename), 'utf-8', function(err, content) {
-            if (err) {
-              console.error(err);
-              reject();
-            }
-            console.log(content);
-            resolve(JSON.parse(content));
-          });
-        });
-      }),
-    ).then(files => {
-      cb(files);
-    });
-  });
-}
-
 module.exports = {
   list,
   listTypes,

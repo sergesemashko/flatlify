@@ -1,0 +1,9 @@
+{
+  "type": "Article",
+  "id": 1,
+  "fields": [
+    { "title": "title", "fieldType": "TextInput", "isRequired": true, "_gridDisplay_": true },
+    { "title": "body", "fieldType": "RichTextInput" }
+  ],
+  "icon": "BookIcon"
+}

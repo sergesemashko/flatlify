@@ -5,36 +5,39 @@ import {
   Create,
   Edit,
   required,
-  SelectInput,
   SimpleForm,
-  SimpleFormIterator,
-  RichTextField,
   TextInput,
 } from 'react-admin'
 import S from 'string';
 import { Datagrid, List, TextField, PostListActionToolbar, EditButton } from 'ra-ui-materialui'
-
-const ContentTypeTitle = ({ record }) => {
-  return <span>Content Type {record ? `"${record.type}"` : ''}</span>
-}
+import RichTextInput from 'ra-input-rich-text';
 
 const getFieldComponent = (type) => {
   switch (type) {
     case "RichTextInput":
-      return RichTextField;
+      return RichTextInput;
     case "TextInput":
       return TextInput;
   }
 
+  return <></>;
 }
 
 const createCRUDComponents = (contentTypeSettings) => {
+
+  const ContentTypeTitle = () => {
+    return <span>{S(contentTypeSettings.type).titleCase().s}</span>
+  }
   const Fields = () => {
     return <>
-      <TextInput source="type"  validate={required()} />
       {contentTypeSettings.fields.map(fieldConfig => {
         const FieldComponent = getFieldComponent(fieldConfig.fieldType);
-        return <FieldComponent label={fieldConfig.title} source={S(fieldConfig.title).slugify().camelize().s} />;
+        console.log(fieldConfig, FieldComponent);
+        return <FieldComponent
+          label={fieldConfig.title}
+          source={S(fieldConfig.title).slugify().camelize().s}
+          required={fieldConfig.isRequired ? required() : undefined}
+        />;
       })}
     </>;
   }
@@ -60,7 +63,11 @@ const createCRUDComponents = (contentTypeSettings) => {
     >
       <Datagrid>
         <TextField source="id"/>
-        <TextField source="type"/>
+        {contentTypeSettings.fields.filter(fieldConfig =>
+          !!fieldConfig._gridDisplay_
+        ).map(fieldConfig => {
+          return <TextField source={S(fieldConfig.title).slugify().camelize().s} />;
+        })}
         <EditButton />
       </Datagrid>
     </List>

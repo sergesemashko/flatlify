@@ -1,0 +1,8 @@
+{
+  "type": "Media",
+  "fields": [
+    { "title": "title", "fieldType": "TextInput", "isRequired": true },
+    { "title": "body", "fieldType": "RichTextInput" }
+  ],
+  "id": 2
+}

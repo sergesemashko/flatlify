@@ -1,48 +1,96 @@
 {
-  "content-types": [
+  "article": [
     {
-      "views": 0,
-      "id": 1
-    }
-  ],
-  "posts": [
-    {
+      "title": "My first article",
       "id": 1,
-      "title": "json-server",
-      "author": "typicode"
+      "body": "<p>asdasd</p><p><br></p><p>asdasda</p><p><br></p><p><br></p><p>asd</p>"
     },
     {
-      "title": "Asset utilization (Bar charts)",
-      "teaser": "12312",
-      "body": "123123",
-      "published_at": "123123-01-18",
-      "average_note": "123123",
+      "title": "My 2nd post",
+      "body": "<p>Second post body</p>",
+      "id": 2
+    }
+  ],
+  "content-types": [
+    {
+      "type": "Article",
+      "id": 1,
+      "fields": [
+        {
+          "title": "title",
+          "fieldType": "TextInput",
+          "isRequired": true,
+          "_gridDisplay_": true
+        },
+        {
+          "title": "body",
+          "fieldType": "RichTextInput"
+        }
+      ],
+      "icon": "BookIcon"
+    },
+    {
+      "type": "Media",
+      "fields": [
+        {
+          "title": "title",
+          "fieldType": "TextInput",
+          "isRequired": true
+        },
+        {
+          "title": "body",
+          "fieldType": "RichTextInput"
+        }
+      ],
       "id": 2
     },
     {
-      "average_note": 5,
-      "published_at": "2019-12-26T01:31:47.647Z",
-      "commentable": true,
-      "backlinks": [
+      "type": "Video",
+      "id": 3,
+      "fields": [
         {
-          "date": "2019-12-26T01:27:23.517Z",
-          "url": "http://google.com"
+          "title": "title",
+          "fieldType": "TextInput"
+        }
+      ]
+    },
+    {
+      "type": "Episode",
+      "fields": [
+        {
+          "title": "title",
+          "fieldType": "RichTextInput"
         }
       ],
-      "title": "weqwe",
-      "teaser": "qweqwe",
-      "body": "<p>qweqweqw</p>",
-      "id": 3
-    }
-  ],
-  "comments": [
+      "id": 4
+    },
     {
-      "id": 1,
-      "body": "some comment",
-      "postId": 1
+      "type": "Characters",
+      "fields": [
+        {
+          "title": "Name",
+          "fieldType": "TextInput",
+          "isRequired": true
+        }
+      ],
+      "id": 5
+    },
+    {
+      "type": "Actors",
+      "icon": "BookIcon",
+      "fields": [
+        {
+          "title": "Name",
+          "isRequired": true,
+          "fieldType": "TextInput"
+        }
+      ],
+      "id": 6
     }
   ],
-  "profile": {
-    "name": "typicode"
-  }
+  "video": [
+    {
+      "title": "First video"
+    }
+  ]
 }
