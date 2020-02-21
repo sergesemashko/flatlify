@@ -1,9 +1,30 @@
 import axios from 'axios';
+import qs from 'querystring';
 
 const HOST = 'http://localhost:3010';
 
 const load = async (contentType, slug) => {
   const response = await axios.get(`${HOST}/_api/content/${contentType}/${slug}`);
+  return response.data;
+};
+
+const loadMedia = async name => {
+  const response = await axios.get(`${HOST}/_api/content/media/${name}`);
+  return response.data;
+};
+
+const mediaList = async () => {
+  const response = await axios.get(`${HOST}/_api/content/media`);
+  return response.data;
+};
+
+const removeMedia = async name => {
+  await axios.delete(`${HOST}/_api/content/media`, { params: { name } });
+  return true;
+};
+
+const saveMedia = async data => {
+  const response = await axios.post(`${HOST}/_api/content/media`, data);
   return response.data;
 };
 
@@ -37,6 +58,10 @@ module.exports = {
   load,
   list,
   loadTypeSchema,
+  saveMedia,
+  removeMedia,
+  mediaList,
+  loadMedia,
   create,
   deleteContent,
 };

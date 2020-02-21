@@ -9,13 +9,18 @@
     },
     {
       "type": "text",
+      "name": "data",
       "required": true,
-      "name": "data"
+      "maxLength": "10"
     },
     {
       "type": "multiline-text",
       "required": true,
       "name": "multi-data"
+    },
+    {
+      "type": "media",
+      "name": "media-data"
     }
   ]
 }

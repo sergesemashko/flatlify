@@ -2,12 +2,19 @@ import React from 'react';
 import Router from 'next/router';
 import { load, save } from '../../../core/client/api/content';
 import { getContentTypeMeta } from '../../../core/entities/content-type';
+import { getFieldComponentByType } from '../../../core/entities/field-type';
 import ContentTypeForm from '../../../core/ui/ContentTypeForm';
 
 const Edit = ({ content, typeSchema }) => (
   <ContentTypeForm
     initialValues={content}
-    typeSchema={typeSchema}
+    typeSchema={{
+      ...typeSchema,
+      fields: typeSchema.fields.map(field => ({
+        ...field,
+        Renderer: getFieldComponentByType(field.type),
+      })),
+    }}
     onSave={values => {
       values.slug = values.slug.trim();
       save(content.type, content.slug, { type: content.type, ...values }).then(
