@@ -24,7 +24,6 @@ const navItems = [{ to: '/admin/content', name: 'Content Types' }];
 
 const AdminSideNav = props => {
   const { classes } = props;
-
   return (
     <Drawer open variant="permanent">
       <div className={classes.toolbar}>

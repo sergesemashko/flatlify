@@ -15,14 +15,6 @@ const getContentTypeMeta = contentType => {
   };
 };
 
-// const setContentTypeSchema = (contentType, contentTypeMeta) => {
-
-// };
-
-// const contentRenderer = (contentTypeMeta, data) => {
-
-// }
-
 const updateContentTypeMeta = (contentTypeMeta, data) => {};
 
 module.exports = {

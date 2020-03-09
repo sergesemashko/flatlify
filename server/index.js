@@ -86,7 +86,6 @@ app.prepare().then(() => {
   });
 
   server.get('/_api/content/:type/:slug', (req, res) => {
-    console.log(req.params);
     return content
       .load(req.params.type, req.params.slug, data => {
         res.send(JSON.stringify(data));
@@ -165,6 +164,5 @@ app.prepare().then(() => {
 
   server.listen(port, err => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
   });
 });

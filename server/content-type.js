@@ -11,7 +11,6 @@ const getList = cb => {
     if (er) {
       cb(er);
     }
-    console.log(path.resolve('../configs/content-types/*.json'), files);
     Promise.all(files.map(file => fse.readJson(file)))
       .then(cb.bind(this, null))
       .catch(cb);

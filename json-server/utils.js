@@ -21,10 +21,6 @@ function remove(filepath) {
   return fse.remove(filepath);
 }
 
-function ensureDir(dir) {
-  return fse.ensureDir(dir);
-}
-
 function readCollectionList(dirname) {
   return new Promise(async (resolve, reject) => {
     if (await fse.pathExists(dirname)) {
@@ -77,6 +73,5 @@ module.exports = {
   readCollectionList,
   save,
   read,
-  ensureDir,
   remove,
 };

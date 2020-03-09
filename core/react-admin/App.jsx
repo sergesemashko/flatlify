@@ -1,22 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react'
-import DataProvider from './dataProvider';
-import authProvider from './authProvider';
-import contentTypesActions from './content-types'
-import modifiedFilesActions from './modified-files'
-import {useSelector} from 'react-redux';
+import React, { useEffect, useState, useRef } from 'react';
+import { createSelector } from 'reselect';
+import { DataProvider } from './dataProvider';
+import contentTypesActions from './content-types';
+import modifiedFilesActions from './modified-files';
 import getProp from 'lodash/get';
 import createCrudComponents from './create-crud-components';
 
-import {
-  AdminContext,
-  AdminUI,
-  Resource,
-  ListGuesser,
-  EditGuesser,
-  ShowGuesser,
-  useDataProvider,
-} from 'react-admin';
-const dataProvider = DataProvider('http://localhost:3000');
+import { AdminContext, AdminUI, Resource } from 'react-admin';
+import { useSelector } from 'react-redux';
+const dataProvider = DataProvider('http://localhost:3020');
 
 const App = () => (
   <AdminContext dataProvider={dataProvider}>
@@ -24,51 +16,32 @@ const App = () => (
   </AdminContext>
 );
 
-const contentTypeSelector = (state) => {
-  const typesIDMap = getProp(state, ['admin','resources', 'content-types','data'], {});
-  return Object.values(typesIDMap);
-}
+const contentTypesSelector = createSelector(
+  [state => state.admin.resources['content-types']?.data || {}],
+  resources => Object.values(resources),
+);
 
 function Resources() {
-  const computedContentTypes = useRef({});
-  const [resources, setResources] = useState([]);
+  const contentTypes = useSelector(contentTypesSelector);
 
-  console.log(resources);
-
-  useEffect(() => {
-    dataProvider.getList('content-types', {
-      pagination: { page: 1, perPage: 25 },
-      sort: { field: 'title', order: 'ASC' },
-    }).then(({data: contentTypes}) => {
-      console.log(contentTypes)
-
-      if (Array.isArray(contentTypes)) {
-        contentTypes.forEach(contentType => {
-          if (!computedContentTypes.current[contentType.type]) {
-            const resource = <Resource
-              key={`type-${contentType.type}`}
-              name={`${String(contentType.type).toLowerCase()}`}
-              {...createCrudComponents(contentType)}
-            />;
-            computedContentTypes.current[contentType.type] = resource;
-          }
-        })
-        setResources(Object.values(computedContentTypes.current));
-      };
-    }).catch(e => console.error(e))
-
-    return () => {}
-  }, [])
-
+  const contentTypeComponents = contentTypes.map(resource => {
+    return (
+      <Resource
+        key={`type-${resource.type}`}
+        name={`${String(resource.type).toLowerCase()}`}
+        {...createCrudComponents(resource)}
+      />
+    );
+  });
   return (
     <AdminUI>
       {[
-        <Resource name="content-types" {...contentTypesActions} />,
-        <Resource name="modified-files" {...modifiedFilesActions} />,
-        ...resources,
+        <Resource key="content-types" name="content-types" {...contentTypesActions} />,
+        <Resource key="modified-files" name="modified-files" {...modifiedFilesActions} />,
+        ...contentTypeComponents,
       ]}
     </AdminUI>
   );
-};
+}
 
 export default App;

@@ -1,0 +1,82 @@
+{
+  "article": [
+    {
+      "field1": "field1",
+      "id": 0
+    },
+    {
+      "field1": "article 2",
+      "id": 1
+    }
+  ],
+  "media": [],
+  "video": [
+    {
+      "field1": "video 1",
+      "id": 0
+    }
+  ],
+  "content-types": [
+    {
+      "type": "Article",
+      "fields": [
+        {
+          "fieldType": "TextInput",
+          "title": "field1"
+        }
+      ],
+      "id": 0
+    },
+    {
+      "type": "Media",
+      "fields": [
+        {
+          "fieldType": "TextInput",
+          "title": "field1"
+        }
+      ],
+      "id": 1
+    },
+    {
+      "type": "Video",
+      "fields": [
+        {
+          "fieldType": "TextInput",
+          "title": "field1"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "fields": [
+        {
+          "fieldType": "TextInput",
+          "title": "helloworld"
+        }
+      ],
+      "type": "type1",
+      "id": 3
+    },
+    {
+      "fields": [
+        {
+          "fieldType": "TextInput",
+          "title": "2134"
+        }
+      ],
+      "type": "ензу2314",
+      "id": 4
+    }
+  ],
+  "type1": [
+    {
+      "helloworld": "dadadad",
+      "id": 0
+    },
+    {
+      "helloworld": "яасияиа",
+      "id": 1
+    }
+  ],
+  "ензу2314": []
+}
