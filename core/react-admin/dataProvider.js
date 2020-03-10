@@ -27,17 +27,24 @@ export const DataProvider = (baseURL = 'localhost:3020') => ({
   },
   getManyReference: async (resource, params) => {},
   create: async (resource, params) => {
-    console.log(params);
     const response = await axios.put(`${getRouteURL(baseURL, resource)}/${resource}`, {
       ...params,
     });
     return response;
   },
   update: async (resource, params) => {
-    const response = await axios.patch(`${getRouteURL(baseURL, resource)}/${resource}`, { params });
+    const id = params.id;
+    const response = await axios.patch(`${getRouteURL(baseURL, resource)}/${resource}/${id}`, {
+      ...params.data,
+    });
     return response.data;
   },
   updateMany: async (resource, params) => {},
-  delete: async (resource, params) => {},
+  delete: async (resource, params) => {
+    const id = params.id;
+    console.log('delete');
+    const response = await axios.delete(`${getRouteURL(baseURL, resource)}/${resource}/${id}`);
+    return response.data;
+  },
   deleteMany: async (resource, params) => {},
 });

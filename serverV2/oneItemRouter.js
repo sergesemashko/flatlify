@@ -21,7 +21,8 @@ module.exports = db => {
       .assign(params)
       .write();
 
-    res.status(204).send();
+    const newValue = db.get(contentType, item).value();
+    res.status(200).send({ data: newValue });
   });
 
   router.delete('/:contentType/:item', (req, res) => {

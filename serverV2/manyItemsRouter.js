@@ -32,12 +32,11 @@ module.exports = db => {
       .assign(params) // TODO:  test assign to multiple values
       .write();
 
-    res.status(204).end();
+    res.status(200).end();
   });
 
   router.put('/:contentType', async (req, res) => {
     const { contentType } = req.params;
-
 
     const id = db.get(contentType).value().length;
 
@@ -47,7 +46,7 @@ module.exports = db => {
       .get(contentType)
       .push(data)
       .write();
-    res.send({ data, ...data });
+    res.send({ data });
   });
 
   router.delete('/:contentType', (req, res) => {
@@ -57,7 +56,7 @@ module.exports = db => {
     db.get(contentType)
       .remove(e => ids.include(e.id))
       .write();
-    res.status(204).end();
+    res.status(200).end();
   });
 
   return router;

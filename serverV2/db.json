@@ -13,16 +13,25 @@
   "video": [
     {
       "field1": "video 1",
-      "id": 0
+      "id": 0,
+      "field123": "123412351235",
+      "field": "qer",
+      "field2": "qwer"
     }
   ],
   "content-types": [
     {
-      "type": "Article",
+      "type": "Article24",
       "fields": [
         {
           "fieldType": "TextInput",
-          "title": "field1"
+          "title": "field",
+          "isRequired": false
+        },
+        {
+          "fieldType": "TextInput",
+          "title": "12341235132521",
+          "isRequired": false
         }
       ],
       "id": 0
@@ -42,7 +51,13 @@
       "fields": [
         {
           "fieldType": "TextInput",
-          "title": "field1"
+          "title": "field",
+          "isRequired": false
+        },
+        {
+          "fieldType": "TextInput",
+          "title": "field2",
+          "_gridDisplay_": true
         }
       ],
       "id": 2
