@@ -42,9 +42,14 @@ export const DataProvider = (baseURL = 'localhost:3020') => ({
   updateMany: async (resource, params) => {},
   delete: async (resource, params) => {
     const id = params.id;
-    console.log('delete');
     const response = await axios.delete(`${getRouteURL(baseURL, resource)}/${resource}/${id}`);
     return response.data;
   },
-  deleteMany: async (resource, params) => {},
+  deleteMany: async (resource, params) => {
+    const { ids } = params;
+    const response = await axios.delete(`${getRouteURL(baseURL, resource)}/${resource}`, {
+      data: ids,
+    });
+    return response.data;
+  },
 });

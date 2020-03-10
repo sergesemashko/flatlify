@@ -66,32 +66,18 @@
       "fields": [
         {
           "fieldType": "TextInput",
-          "title": "helloworld"
+          "title": "helloworld",
+          "_gridDisplay_": true
         }
       ],
       "type": "type1",
       "id": 3
-    },
-    {
-      "fields": [
-        {
-          "fieldType": "TextInput",
-          "title": "2134"
-        }
-      ],
-      "type": "ензу2314",
-      "id": 4
     }
   ],
   "type1": [
     {
-      "helloworld": "dadadad",
-      "id": 0
-    },
-    {
-      "helloworld": "яасияиа",
-      "id": 1
+      "helloworld": "fourth",
+      "id": 4
     }
-  ],
-  "ензу2314": []
+  ]
 }

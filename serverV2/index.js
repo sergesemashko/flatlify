@@ -2,8 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const low = require('lowdb');
-const oneItemRouter = require('./oneItemRouter');
-const manyItemsRouter = require('./manyItemsRouter');
+const contentRouter = require('./contentRouter');
 const contentTypesRouter = require('./contentTypesRouter');
 
 const app = express();
@@ -19,8 +18,7 @@ const db = low(adapter);
 
 db.then(db => db.read()).then(db => {
   app.use('/content-types', contentTypesRouter(db));
-  app.use('/', manyItemsRouter(db));
-  app.use('/', oneItemRouter(db));
+  app.use('/', contentRouter(db));
   app.listen(port, err => {
     if (err) throw err;
   });
