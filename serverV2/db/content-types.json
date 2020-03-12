@@ -1,0 +1,20 @@
+[
+  {
+    "type": "Article",
+    "fields": [
+      { "fieldType": "TextInput", "title": "field", "isRequired": false, "_gridDisplay_": true },
+      { "fieldType": "TextInput", "title": "name2", "isRequired": true, "_gridDisplay_": true },
+      { "fieldType": "TextInput", "title": "field3", "_gridDisplay_": true }
+    ],
+    "id": 0
+  },
+  { "type": "Media", "fields": [{ "fieldType": "TextInput", "title": "field1" }], "id": 1 },
+  {
+    "type": "Video",
+    "fields": [
+      { "fieldType": "TextInput", "title": "field", "isRequired": false },
+      { "fieldType": "TextInput", "title": "field2", "_gridDisplay_": true }
+    ],
+    "id": 2
+  }
+]

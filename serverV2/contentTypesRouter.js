@@ -1,106 +1,126 @@
 const express = require('express');
+const path = require('path');
+const utils = require('./utils');
 
-module.exports = db => {
+module.exports = () => {
   const router = express.Router();
 
-  router.get('/:contentType', (req, res) => {
+  router.get('/:contentType', async (req, res) => {
     const { contentType } = req.params;
     const { ids } = req.query;
-    const items = db
-      .get(contentType)
-      .filter(e => ids.include(e.id))
-      .value();
-    res.send({ data: items });
+
+    const contentPath = path.resolve('db', `${contentType}.json`);
+    const items = await utils.read(contentPath);
+    const data = items.filter(item => ids.includes(Number(item.id)));
+
+    res.send({ data });
   });
 
-  router.get('/:contentType/list', (req, res) => {
+  router.get('/:contentType/list', async (req, res) => {
     const { contentType } = req.params;
-    const items = db.get(contentType).value() || [];
+
+    const contentPath = path.resolve('db', `${contentType}.json`);
+    const items = await utils.read(contentPath);
+
     res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
     res.setHeader('X-Total-Count', items.length);
     res.send({ data: items, total: items.length });
   });
 
-  router.get('/:contentType/:item', async (req, res) => {
-    const { item, contentType } = req.params;
-    const data = (await db.read())
-      .get(contentType)
-      .find({ id: Number(item) })
-      .value();
+  router.get('/:contentType/:itemId', async (req, res) => {
+    const { itemId, contentType } = req.params;
+
+    const contentPath = path.resolve('db', `${contentType}.json`);
+    const items = await utils.read(contentPath);
+    const data = items.find(item => item.id === Number(itemId));
+
     res.send({ data });
   });
 
-  router.patch('/:contentType/:item', (req, res) => {
-    const { item, contentType } = req.params;
+  router.patch('/:contentType/:itemId', async (req, res) => {
+    const { itemId, contentType } = req.params;
     const params = req.body;
-    //TODO: change contentType name
-    db.get(contentType)
-      .find({ id: Number(item) })
-      .assign(params)
-      .write();
-    const newValue = db.get(contentType, item).value();
-    res.status(200).send({ data: newValue });
+
+    const contentPath = path.resolve('db', `${contentType}.json`);
+    const items = await utils.read(contentPath);
+    const itemIndex = items.findIndex(item => item.id === Number(itemId));
+
+    items[itemIndex] = { ...items[itemIndex], ...params };
+
+    await utils.save(contentPath, items);
+
+    res.status(200).send({ data: items[itemIndex] });
   });
 
-  router.patch('/:contentType', (req, res) => {
+  router.patch('/:contentType', async (req, res) => {
     const { contentType } = req.params;
     const params = req.body;
     const { ids } = req.query;
-    db.get(contentType)
-      .filter(e => ids.include(e.id))
-      .assign(params) // TODO:  test assign to multiple values
-      .write();
 
-    res.status(501).end();
+    const contentPath = path.resolve('db', `${contentType}.json`);
+    const items = await utils.read(contentPath);
+    items.forEach((item, index) => {
+      if (ids.includes(item.id)) {
+        items[index] = { ...items[index], ...params };
+      }
+    });
+
+    await utils.save(contentPath, items);
+
+    res.status(200).send({ data: ids });
   });
 
   router.put('/:contentType', async (req, res) => {
     const { contentType } = req.params;
-    const id =
-      db
-        .get(contentType)
-        .last()
-        .value().id + 1;
 
-    const data = { fields: [], ...req.body.data, id };
+    const contentPath = path.resolve('db', `${contentType}.json`);
+    const items = await utils.read(contentPath);
+    const newId = items.length ? items[items.length - 1].id + 1 : 0;
 
-    await Promise.all([
-      db
-        .get(contentType)
-        .push(data)
-        .write(),
-      db.set(data.type, []).write(),
-    ]);
+    const newContentType = { ...req.body.data, id: newId };
 
-    res.send({ data });
+    const newItems = [...items, newContentType];
+    const itemPath = path.resolve('db', `${req.body.data.type}.json`);
+
+    await Promise.all([utils.save(contentPath, newItems), utils.save(itemPath, [])]);
+
+    res.send(newContentType);
   });
 
-  router.delete('/:contentType/:item', async (req, res) => {
-    // const { item, contentType } = req.params;
-    // const { type } = db
-    //   .get(contentType)
-    //   .find({ id: Number(item) })
-    //   .value();
+  router.delete('/:contentType/:itemId', async (req, res) => {
+    const { contentType, itemId } = req.params;
 
-    // await Promise.all([
-    //   db
-    //     .get(contentType)
-    //     .remove({ id: Number(item) })
-    //     .write(),
-    //   db.unset(type).write(),
-    // ]);
+    const contentPath = path.resolve('db', `${contentType}.json`);
+
+    const items = await utils.read(contentPath);
+    const newItems = items.filter(item => item.id !== Number(itemId));
+    const itemType = items.find(item => item.id === Number(itemId)).type;
+
+    const itemPath = path.resolve('db', `${itemType}.json`);
+
+    await Promise.all([utils.save(contentPath, newItems), utils.remove(itemPath)]);
+
     res.send({ data: {} });
   });
 
-  router.delete('/:contentType', (req, res) => {
+  router.delete('/:contentType', async (req, res) => {
     const { contentType } = req.params;
     const ids = req.body;
 
-    ids.forEach(id => {
-      db.get(contentType)
-        .remove({ id: Number(id) })
-        .write();
+    const contentPath = path.resolve('db', `${contentType}.json`);
+
+    const items = await utils.read(contentPath);
+    const newItems = items.filter(item => !ids.includes(Number(item.id)));
+    const removedContentTypes = items
+      .filter(item => ids.includes(Number(item.id)))
+      .map(item => item.type);
+
+    const removedContentTypePromises = removedContentTypes.map(removedContentType => {
+      const contentTypePath = path.resolve('db', `${removedContentType}.json`);
+      return utils.remove(contentTypePath);
     });
+
+    await Promise.all([utils.save(contentPath, newItems), removedContentTypePromises]);
 
     res.send({ data: {} });
   });
