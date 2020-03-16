@@ -16,9 +16,9 @@ const FileAsync = require('lowdb/adapters/FileAsync');
 const adapter = new FileAsync('db.json');
 const db = low(adapter);
 
-db.then(db => db.read()).then(db => {
-  app.use('/content-types', contentTypesRouter(db));
-  app.use('/', contentRouter(db));
+db.then(db => db.read()).then(() => {
+  app.use('/content-types', contentTypesRouter());
+  app.use('/', contentRouter());
   app.listen(port, err => {
     if (err) throw err;
   });

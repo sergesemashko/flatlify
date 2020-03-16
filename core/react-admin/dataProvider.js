@@ -11,7 +11,7 @@ const getRouteURL = (baseURL, resource) => {
 
 export const DataProvider = (baseURL = 'localhost:3020') => ({
   getList: async (resource, params) => {
-    const response = await axios.get(`${getRouteURL(baseURL, resource)}/${resource}/list`, {
+    const response = await axios.get(`${getRouteURL(baseURL, resource)}/${resource}`, {
       params,
     });
     return response.data;

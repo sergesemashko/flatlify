@@ -1,129 +1,47 @@
-const express = require('express');
 const path = require('path');
 const utils = require('./utils');
+const baseRouter = require('./contentRouter');
 
-module.exports = () => {
-  const router = express.Router();
+async function putOne(req, res) {
+  const { contentType } = req.params;
 
-  router.get('/:contentType', async (req, res) => {
-    const { contentType } = req.params;
-    const { ids } = req.query;
+  const contentPath = path.resolve(path.resolve('db', `${contentType}`));
+  const items = await utils.readCollectionList(contentPath);
+  const newId = items.length ? items[items.length - 1].id + 1 : 0;
+  const newContentType = {
+    ...req.body.data,
+    id: newId,
+  };
 
-    const contentPath = path.resolve('db', `${contentType}.json`);
-    const items = await utils.read(contentPath);
-    const data = items.filter(item => ids.includes(Number(item.id)));
+  const itemPath = path.resolve('db', `${contentType}`, `${newId}.json`);
+  const newDirPath = path.resolve('db', `${req.body.data.type}`);
+  await Promise.all([utils.save(itemPath, newContentType, utils.ensureDir(newDirPath))]);
 
-    res.send({ data });
-  });
+  res.send(newContentType);
+}
+async function deleteItem(contentType, itemId) {
+  const contentItemPath = path.resolve('db', `${contentType}`, `${itemId}.json`);
+  const { type } = await utils.read(contentItemPath);
+  const contentFolderPath = path.resolve('db', `${type}`);
 
-  router.get('/:contentType/list', async (req, res) => {
-    const { contentType } = req.params;
+  await Promise.all([utils.remove(contentItemPath), utils.remove(contentFolderPath)]);
+  return {};
+}
+async function deleteOne(req, res) {
+  const { contentType, itemId } = req.params;
 
-    const contentPath = path.resolve('db', `${contentType}.json`);
-    const items = await utils.read(contentPath);
+  await deleteItem(contentType, itemId);
 
-    res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-    res.setHeader('X-Total-Count', items.length);
-    res.send({ data: items, total: items.length });
-  });
+  res.send({ data: {} });
+}
 
-  router.get('/:contentType/:itemId', async (req, res) => {
-    const { itemId, contentType } = req.params;
+async function deleteMany(req, res) {
+  const { contentType } = req.params;
+  const ids = req.body;
 
-    const contentPath = path.resolve('db', `${contentType}.json`);
-    const items = await utils.read(contentPath);
-    const data = items.find(item => item.id === Number(itemId));
+  const deletePromises = ids.map(id => deleteItem(contentType, id));
+  await Promise.all(deletePromises);
 
-    res.send({ data });
-  });
-
-  router.patch('/:contentType/:itemId', async (req, res) => {
-    const { itemId, contentType } = req.params;
-    const params = req.body;
-
-    const contentPath = path.resolve('db', `${contentType}.json`);
-    const items = await utils.read(contentPath);
-    const itemIndex = items.findIndex(item => item.id === Number(itemId));
-
-    items[itemIndex] = { ...items[itemIndex], ...params };
-
-    await utils.save(contentPath, items);
-
-    res.status(200).send({ data: items[itemIndex] });
-  });
-
-  router.patch('/:contentType', async (req, res) => {
-    const { contentType } = req.params;
-    const params = req.body;
-    const { ids } = req.query;
-
-    const contentPath = path.resolve('db', `${contentType}.json`);
-    const items = await utils.read(contentPath);
-    items.forEach((item, index) => {
-      if (ids.includes(item.id)) {
-        items[index] = { ...items[index], ...params };
-      }
-    });
-
-    await utils.save(contentPath, items);
-
-    res.status(200).send({ data: ids });
-  });
-
-  router.put('/:contentType', async (req, res) => {
-    const { contentType } = req.params;
-
-    const contentPath = path.resolve('db', `${contentType}.json`);
-    const items = await utils.read(contentPath);
-    const newId = items.length ? items[items.length - 1].id + 1 : 0;
-
-    const newContentType = { ...req.body.data, id: newId };
-
-    const newItems = [...items, newContentType];
-    const itemPath = path.resolve('db', `${req.body.data.type}.json`);
-
-    await Promise.all([utils.save(contentPath, newItems), utils.save(itemPath, [])]);
-
-    res.send(newContentType);
-  });
-
-  router.delete('/:contentType/:itemId', async (req, res) => {
-    const { contentType, itemId } = req.params;
-
-    const contentPath = path.resolve('db', `${contentType}.json`);
-
-    const items = await utils.read(contentPath);
-    const newItems = items.filter(item => item.id !== Number(itemId));
-    const itemType = items.find(item => item.id === Number(itemId)).type;
-
-    const itemPath = path.resolve('db', `${itemType}.json`);
-
-    await Promise.all([utils.save(contentPath, newItems), utils.remove(itemPath)]);
-
-    res.send({ data: {} });
-  });
-
-  router.delete('/:contentType', async (req, res) => {
-    const { contentType } = req.params;
-    const ids = req.body;
-
-    const contentPath = path.resolve('db', `${contentType}.json`);
-
-    const items = await utils.read(contentPath);
-    const newItems = items.filter(item => !ids.includes(Number(item.id)));
-    const removedContentTypes = items
-      .filter(item => ids.includes(Number(item.id)))
-      .map(item => item.type);
-
-    const removedContentTypePromises = removedContentTypes.map(removedContentType => {
-      const contentTypePath = path.resolve('db', `${removedContentType}.json`);
-      return utils.remove(contentTypePath);
-    });
-
-    await Promise.all([utils.save(contentPath, newItems), removedContentTypePromises]);
-
-    res.send({ data: {} });
-  });
-
-  return router;
-};
+  res.send({ data: {} });
+}
+module.exports = () => baseRouter({ deleteOne, deleteMany, putOne });
