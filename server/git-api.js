@@ -4,7 +4,6 @@ const slice = require('lodash/slice');
 
 function registerGitAPI(server, root) {
   server.get('/modified-files', async (req, res) => {
-    console.log(req.query);
     // { _end: '10', _order: 'ASC', _sort: 'id', _start: '0' };
     const _start = req.query._start || 0;
     const _end = req.query._end || 25;
@@ -19,12 +18,13 @@ function registerGitAPI(server, root) {
   });
 
   server.put('/modified-files', async (req, res) => {
-    console.log(req.body);
-    console.log(req.params);
-    console.log(req.query);
     try {
-      console.log(req.body && Array.isArray(req.body.ids) && req.body.data && req.body.data.gitAction === 'commit');
-      if (req.body && Array.isArray(req.body.ids) && req.body.data && req.body.data.gitAction === 'commit') {
+      if (
+        req.body &&
+        Array.isArray(req.body.ids) &&
+        req.body.data &&
+        req.body.data.gitAction === 'commit'
+      ) {
         const message = req.body.message || '';
         const sha = await gitUtils.commit(req.body.ids, { root, message });
       }

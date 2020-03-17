@@ -1,0 +1,7 @@
+{
+  "type": "newtypew2",
+  "fields": [
+    { "fieldType": "TextInput", "title": "asdfasdf", "isRequired": true, "_gridDisplay_": true }
+  ],
+  "id": 3
+}

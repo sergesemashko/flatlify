@@ -1,7 +1,8 @@
 const path = require('path');
-const fs = require('fs').promises;
-const statAsync = fs.stat;
-const readdirAsync = fs.readdir;
+const fs = require('fs');
+const pify = require('pify');
+const statAsync = pify(fs.stat);
+const readdirAsync = pify(fs.readdir);
 const fse = require('fs-extra');
 
 function ensureDir(dir) {
@@ -12,7 +13,7 @@ function save(filepath, json) {
   return fse.outputJson(filepath, json);
 }
 
-function read(filepath, json) {
+function read(filepath) {
   return fse.readJson(filepath);
 }
 

@@ -29,7 +29,6 @@ class MyStorage {
     // debug('collectionLists %O', lists);
     return collections;
     return this.fileAsync.read(...args).then(results => {
-      console.log(results);
       this.__state__ = JSON.parse(JSON.stringify(results));
       return results;
     });
@@ -108,24 +107,15 @@ function logResponseBody(req, res, next) {
     if (chunk) chunks.push(chunk);
 
     let body = Buffer.concat(chunks).toString('utf8');
-    console.log(req.path, body);
 
     oldEnd.apply(res, arguments);
   };
-
   next();
 }
 
 const adapter = new MyStorage(path.join(__dirname, 'db.json'));
 low(adapter).then(DB => {
   const router = jsonServer.router(DB);
-  // router.db._.mixin({
-  //   // Return incremented uuid
-  //   // Override router's createId to also return a uuid instead of an int
-  //   createId: function(coll) {
-  //     return nanoid(7)
-  //   }
-  // });
 
   router.render = async (req, res) => {
     let filteredResponse = res.locals.data;
@@ -193,7 +183,7 @@ low(adapter).then(DB => {
   };
 
   const middlewares = jsonServer.defaults();
-  const { registerGitAPI } = require('../server/git-api');
+  // const { registerGitAPI } = require('../server/git-api');
   server.use(logResponseBody);
 
   server.use(middlewares);
@@ -204,10 +194,8 @@ low(adapter).then(DB => {
 
     next();
   });
-  registerGitAPI(server, path.resolve('..'));
+  // registerGitAPI(server, path.resolve('..'));
   server.use(router);
-  server.listen(3000, () => {
-    console.log('JSON Server is running on http://localhost:3000');
-  });
+  server.listen(3000, () => {});
 });
 // const router = jsonServer.router(path.join(__dirname, 'db.json'));
