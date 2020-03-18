@@ -1,168 +1,21 @@
 const express = require('express');
-const next = require('next');
 const bodyParser = require('body-parser');
-const { registerGitAPI } = require('./git-api');
-const port = parseInt(process.env.PORT, 10) || 3010;
-const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev });
-const handle = app.getRequestHandler();
-const multer = require('multer');
-const uuidv4 = require('uuid/v4');
+const cors = require('cors');
+const path = require('path');
+const contentRouter = require('./contentRouter');
+const contentTypesRouter = require('./contentTypesRouter');
+const gitRouter = require('./gitRouter');
 
-const content = require('./content');
-const contentType = require('./content-type');
+const app = express();
+const port = parseInt(process.env.PORT, 10) || 3020;
+const root = path.resolve(__dirname, '..');
 
-const createStorage = () => {
-  const currentDate = `${new Date().getMonth() +
-    1}.${new Date().getDate()}.${new Date().getFullYear()}`;
-  return multer.diskStorage({
-    destination: `./${process.env.MEDIA_FOLDER}/${currentDate}`,
-    filename(req, file, cb) {
-      cb(null, `${file.originalname}`);
-    },
-  });
-};
-
-const storage = createStorage();
-
-const upload = multer({ storage });
-
-app.prepare().then(() => {
-  const server = express();
-  server.use(bodyParser.json()); // support json encoded bodies
-  server.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-
-  registerGitAPI(server);
-  server.get('/_api/content', (req, res) => {
-    return content
-      .listTypes(files => {
-        res.status(200);
-        res.send(JSON.stringify(files));
-      })
-      .catch(error => {
-        res.status(500);
-        res.send(JSON.stringify({ error: error.toString(), message: error.stack }));
-      });
-  });
-
-  server.get('/_api/content/media/:uuid', (req, res) => {
-    const fileUuid = req.params.uuid;
-    return content.getMedia(fileUuid, result => {
-      res.send(result);
-    });
-  });
-
-  server.get('/_api/content/media', (req, res) => {
-    return content.mediaList(files => {
-      res.send(JSON.stringify(files));
-    });
-  });
-
-  server.get('/_api/content-type/:type', (req, res) => {
-    return contentType.loadSchema(req.params.type, files => {
-      res.send(JSON.stringify(files));
-    });
-  });
-  server.get('/_api/content-types', (req, res) => {
-    return contentType.getList((error, files) => {
-      if (error) {
-        res.status(500);
-        res.send(JSON.stringify({ error: error.toString(), message: error.stack }));
-        return;
-      }
-      res.status(200);
-      res.send(JSON.stringify(files));
-    });
-  });
-  server.get('/_api/content-types/:type', (req, res) => {
-    return contentType.loadSchema(req.params.type, files => {
-      res.send(JSON.stringify(files));
-    });
-  });
-  server.get('/_api/content/:type', (req, res) => {
-    return content.list(req.params.type, files => {
-      res.send(JSON.stringify(files));
-    });
-  });
-
-  server.get('/_api/content/:type/:slug', (req, res) => {
-    return content
-      .load(req.params.type, req.params.slug, data => {
-        res.send(JSON.stringify(data));
-      })
-      .catch(error => {
-        res.status(500);
-        res.send(JSON.stringify({ error: error.toString(), message: error.stack }));
-      });
-  });
-
-  server.delete('/_api/content/:type/:slug', (req, res) => {
-    return content.deleteContent(req.params.type, req.params.slug, data => {
-      res.send();
-    });
-  });
-
-  server.delete('/_api/content/media', (req, res) => {
-    const path = JSON.parse(req.query.name).url;
-    return content.removeMedia(path, result => {
-      res.send(result);
-    });
-  });
-
-  server.post('/_api/content/media', (req, res) => {
-    const maxFilesCount = 12;
-    const promise = new Promise((resolve, reject) => {
-      upload.array('file', maxFilesCount)(req, res, err => {
-        if (err) {
-          reject(err);
-        }
-
-        resolve();
-      });
-    });
-
-    promise
-      .then(() => {
-        return res.send(true);
-      })
-      .catch(err => {
-        return res.status(400).send(true);
-      });
-  });
-
-  server.post('/_api/content/:type/:slug', (req, res) => {
-    if (req.body['media-data']) {
-      const currentDate = `${new Date().getMonth() +
-        1}.${new Date().getDate()}.${new Date().getFullYear()}`;
-
-      req.body['media-data'].forEach((item, index) => {
-        const uuid = uuidv4();
-        content.saveMedia(item, currentDate, uuid);
-        req.body['media-data'][index] = uuid;
-      });
-    }
-
-    return content.save(
-      req.params.type,
-      req.params.slug,
-      JSON.stringify(req.body, null, 2),
-      data => {
-        res.send(JSON.stringify(data));
-      },
-    );
-  });
-
-  server.post('/_api/content/:type', (req, res) => {
-    return content.create(req.params.type, JSON.stringify(req.body, null, 2), data => {
-      res.send(JSON.stringify(data));
-    });
-  });
-
-  server.get('*', (req, res) => {
-    handle(req, res);
-  });
-
-  server.listen(port, err => {
-    if (err) throw err;
-  });
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(cors());
+app.use('/content-types', contentTypesRouter(root));
+app.use('/modified-files', gitRouter(root));
+app.use('/', contentRouter(root));
+app.listen(port, err => {
+  if (err) throw err;
 });

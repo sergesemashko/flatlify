@@ -1,5 +1,5 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 import {
   useUpdateMany,
   useRefresh,
@@ -7,9 +7,9 @@ import {
   useUnselectAll,
   Button,
   CRUD_UPDATE_MANY,
-} from 'react-admin'
-import Modal from 'react-modal'
-import {TextareaAutosize} from '@material-ui/core';
+} from 'react-admin';
+import Modal from 'react-modal';
+import { TextareaAutosize } from '@material-ui/core';
 
 const customStyles = {
   content: {
@@ -22,24 +22,23 @@ const customStyles = {
   },
   overlay: {
     zIndex: 2,
-  }
-}
+  },
+};
 
 Modal.setAppElement('#__next');
 
 const GitCommitButton = ({ resource, selectedIds }) => {
-  const notify = useNotify()
-  const unselectAll = useUnselectAll()
-  const refresh = useRefresh()
-  const [modalIsOpen, setIsOpen] = React.useState(false)
-  const [message, setMessage] = React.useState('')
-
-  function openModal () {
-    setIsOpen(true)
+  const notify = useNotify();
+  const unselectAll = useUnselectAll();
+  const refresh = useRefresh();
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [message, setMessage] = React.useState('');
+  function openModal() {
+    setIsOpen(true);
   }
 
-  function closeModal () {
-    setIsOpen(false)
+  function closeModal() {
+    setIsOpen(false);
   }
 
   const [updateMany, { loading }] = useUpdateMany(
@@ -49,33 +48,22 @@ const GitCommitButton = ({ resource, selectedIds }) => {
     {
       action: CRUD_UPDATE_MANY,
       onSuccess: () => {
-        notify(
-          'ra.notification.updated',
-          'info',
-          { smart_count: selectedIds.length },
-          true,
-        )
-        unselectAll(resource)
-        refresh()
+        notify('ra.notification.updated', 'info', { smart_count: selectedIds.length }, true);
+        unselectAll(resource);
+        refresh();
       },
       onFailure: error =>
         notify(
-          typeof error === 'string'
-            ? error
-            : error.message || 'ra.notification.http_error',
+          typeof error === 'string' ? error : error.message || 'ra.notification.http_error',
           'warning',
         ),
       undoable: false,
     },
-  )
+  );
 
-  return (<>
-      <Button
-        label="Commit"
-        disabled={loading}
-        onClick={openModal}
-      >
-      </Button>
+  return (
+    <>
+      <Button label="Commit" disabled={loading} onClick={openModal}></Button>
 
       <Modal
         isOpen={modalIsOpen}
@@ -83,25 +71,26 @@ const GitCommitButton = ({ resource, selectedIds }) => {
         style={customStyles}
         contentLabel="Commit Files"
       >
-        <TextareaAutosize aria-label="minimum height" value={message} onChange={setMessage} rowsMin={3} placeholder="Enter commit message" />
+        <TextareaAutosize
+          aria-label="minimum height"
+          value={message}
+          onChange={setMessage}
+          rowsMin={3}
+          placeholder="Enter commit message"
+        />
         <div>
-          <Button
-            label="Commit"
-            disabled={loading}
-            onClick={updateMany}
-          >
-          </Button>
+          <Button label="Commit" disabled={loading} onClick={() => updateMany()}></Button>
         </div>
       </Modal>
     </>
-  )
-}
+  );
+};
 
 GitCommitButton.propTypes = {
   basePath: PropTypes.string,
   label: PropTypes.string,
   resource: PropTypes.string.isRequired,
   selectedIds: PropTypes.arrayOf(PropTypes.any).isRequired,
-}
+};
 
-export default GitCommitButton
+export default GitCommitButton;

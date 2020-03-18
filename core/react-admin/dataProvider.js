@@ -4,6 +4,8 @@ const getRouteURL = (baseURL, resource) => {
   switch (resource) {
     case 'content-types':
       return `${baseURL}/content-types`;
+    case 'modified-files':
+      return `${baseURL}/modified-files`;
     default:
       return baseURL;
   }
@@ -39,7 +41,13 @@ export const DataProvider = (baseURL = 'localhost:3020') => ({
     });
     return response.data;
   },
-  updateMany: async (resource, params) => {},
+  updateMany: async (resource, params) => {
+    const response = await axios.patch(`${getRouteURL(baseURL, resource)}/${resource}`, {
+      ...params,
+      author: { name: 'name', email: 'email' },
+    });
+    return response.data;
+  },
   delete: async (resource, params) => {
     const id = params.id;
     const response = await axios.delete(`${getRouteURL(baseURL, resource)}/${resource}/${id}`);
