@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(cors());
 app.use('/content-types', contentTypesRouter(root));
 app.use('/modified-files', gitRouter(root));
-app.use('/', contentRouter(root));
+app.use('/', contentRouter({}, root));
 app.listen(port, err => {
   if (err) throw err;
 });

@@ -1,5 +1,0 @@
-{
-  "type": "Characters",
-  "fields": [{ "title": "Name", "fieldType": "TextInput", "isRequired": true }],
-  "id": 5
-}
