@@ -1,8 +1,5 @@
 const path = require('path');
-const fs = require('fs');
-const pify = require('pify');
-const statAsync = pify(fs.stat);
-const readdirAsync = pify(fs.readdir);
+const fs = require('fs').promises;
 const fse = require('fs-extra');
 
 function ensureDir(dir) {
@@ -21,42 +18,35 @@ function remove(filepath) {
   return fse.remove(filepath);
 }
 
-function readCollectionList(dirname) {
-  return new Promise(async (resolve, reject) => {
-    if (await fse.pathExists(dirname)) {
-      fs.readdir(dirname, function(err, filenames) {
-        if (err) {
-          return reject(err);
-        }
+async function readCollectionList(dirname) {
+  if (await fse.pathExists(dirname)) {
+    const filenames = await fs.readdir(dirname);
 
-        Promise.all(
-          filenames.map(filename => {
-            const file = path.resolve(dirname, filename);
-            return statAsync(file).then(stat => {
-              if (stat && stat.isFile()) {
-                return fse.readJson(file, { encoding: 'utf-8' });
-              }
-            });
-          }),
-        )
-          .then(files => files.filter(empty => !!empty))
-          .then(resolve)
-          .catch(reject);
-      });
-    } else {
-      resolve([]);
-    }
-  });
+    const filesPromises = filenames.map(async filename => {
+      const filePath = path.resolve(dirname, filename);
+      const stat = await fs.stat(filePath);
+
+      if (stat && stat.isFile()) {
+        return fse.readJson(filePath, { encoding: 'utf-8' });
+      }
+      return null;
+    });
+
+    let files = await Promise.all(filesPromises);
+
+    const filteredFiles = files.filter(empty => !!empty);
+    return filteredFiles;
+  }
 }
 
 async function readCollections(dirname) {
   const db = {};
-  const dirs = await readdirAsync(dirname);
+  const dirs = await fs.readdir(dirname);
 
   await Promise.all(
     dirs.map(dirPath => {
       const dir = path.resolve(dirname, dirPath);
-      return statAsync(dir).then(async stat => {
+      return fs.stat(dir).then(async stat => {
         if (stat && stat.isDirectory()) {
           db[dirPath] = await readCollectionList(dir);
         }

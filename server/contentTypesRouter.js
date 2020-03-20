@@ -30,7 +30,7 @@ async function patch(root, itemId, contentType, updateParams) {
     ...item,
     ...updateParams,
   };
-  console.log(updateParams.type);
+
   if (updateParams.type) {
     const contentFolderPath = path.resolve(root, 'content', item.type);
     const newContentFolderPath = path.resolve(root, 'content', updateParams.type);
