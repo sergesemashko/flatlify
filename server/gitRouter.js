@@ -7,10 +7,14 @@ module.exports = root => {
   const router = express.Router();
 
   router.get('/modified-files', async (req, res) => {
-    const _start = req.query._start || 0;
-    const _end = req.query._end || 25;
-    const _order = req.query._order || 'ASC';
-    const _sort = req.query._sort || 'id';
+    const pagination = JSON.parse(req.query.pagination);
+    const sort = JSON.parse(req.query.sort);
+
+    const _start = (pagination.page - 1) * pagination.perPage || 0;
+    const _end = pagination.page * pagination.perPage || 25;
+    const _order = sort.order || 'ASC';
+    const _sort = sort.field || 'id';
+
     const files = await gitUtils.status({ root, pattern: req.query.pattern });
     const results = slice(orderBy(files, [_sort], [_order]), _start, _end);
     res.status(200);

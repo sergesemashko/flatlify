@@ -1,12 +1,13 @@
 const path = require('path');
 const utils = require('./utils');
 const baseRouter = require('./contentRouter');
+const { getContentType } = utils;
 
 const createPutOne = root =>
   async function putOne(req, res) {
-    const { contentType } = req.params;
+    const contentType = getContentType(req);
 
-    const contentPath = path.resolve(root, 'server/db', `${contentType}`);
+    const contentPath = path.resolve(root, `${contentType}`);
     const items = await utils.readCollectionList(contentPath);
     const newId = items.length ? items[items.length - 1].id + 1 : 0;
     const newContentType = {
@@ -14,17 +15,17 @@ const createPutOne = root =>
       id: newId,
     };
 
-    const itemPath = path.resolve(root, 'server/db', `${contentType}`, `${newId}.json`);
-    const newDirPath = path.resolve(root, 'server/db', `${req.body.data.type}`);
+    const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
+    const newDirPath = path.resolve(root, `${req.body.data.type}`);
     await Promise.all([utils.save(itemPath, newContentType, utils.ensureDir(newDirPath))]);
 
     res.send(newContentType);
   };
 
 async function deleteItem(root, contentType, itemId) {
-  const contentItemPath = path.resolve(root, 'server/db', `${contentType}`, `${itemId}.json`);
+  const contentItemPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
   const { type } = await utils.read(contentItemPath);
-  const contentFolderPath = path.resolve(root, 'server/db', `${type}`);
+  const contentFolderPath = path.resolve(root, `${type}`);
 
   await Promise.all([utils.remove(contentItemPath), utils.remove(contentFolderPath)]);
   return {};
@@ -32,7 +33,8 @@ async function deleteItem(root, contentType, itemId) {
 
 const createDeleteOne = root =>
   async function deleteOne(req, res) {
-    const { contentType, itemId } = req.params;
+    const { itemId } = req.params;
+    const contentType = getContentType(req);
 
     await deleteItem(root, contentType, itemId);
 
@@ -40,7 +42,8 @@ const createDeleteOne = root =>
   };
 const createDeleteMany = root =>
   async function deleteMany(req, res) {
-    const { contentType } = req.params;
+    const contentType = getContentType(req);
+
     const ids = req.body;
 
     const deletePromises = ids.map(id => deleteItem(root, contentType, id));

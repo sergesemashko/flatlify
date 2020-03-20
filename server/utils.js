@@ -66,6 +66,10 @@ async function readCollections(dirname) {
 
   return db;
 }
+function getContentType(req) {
+  const contentType = req.params.contentType.toLowerCase();
+  return contentType;
+}
 
 module.exports = {
   ensureDir,
@@ -74,4 +78,5 @@ module.exports = {
   save,
   read,
   remove,
+  getContentType,
 };
