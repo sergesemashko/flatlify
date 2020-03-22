@@ -4,9 +4,9 @@
   "description": "Flat file NodeJS based CMS",
   "main": "index.js",
   "scripts": {
-    "dev:nextjs": "cross-env NODE_ENV=development nodemon -r dotenv/config ./server/index.js",
-    "dev:json-server": "nodemon ./json-server/index.js",
-    "dev": "concurrently \"npm run dev:json-server\" \"npm run dev:nextjs\"",
+    "dev:nextjs": "next",
+    "dev:server": "nodemon ./server/index.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:nextjs\"",
     "build": "npm run eslint && next build",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",

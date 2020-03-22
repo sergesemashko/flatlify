@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { createSelector } from 'reselect';
 import { DataProvider } from './dataProvider';
 import contentTypesActions from './content-types';
 import modifiedFilesActions from './modified-files';
-import getProp from 'lodash/get';
 import createCrudComponents from './create-crud-components';
 
 import { AdminContext, AdminUI, Resource } from 'react-admin';

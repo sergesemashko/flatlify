@@ -1,6 +1,0 @@
-{
-  "type": "Actors",
-  "icon": "BookIcon",
-  "fields": [{ "title": "Name", "isRequired": true, "fieldType": "TextInput" }],
-  "id": 6
-}
