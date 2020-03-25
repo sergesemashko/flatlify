@@ -7,21 +7,22 @@ import {
   required,
   SelectInput,
   SimpleForm,
-  SimpleFormIterator,
   TextInput,
   FormDataConsumer,
 } from 'react-admin';
 import BookIcon from '@material-ui/icons/Book';
 import { ContentTypeList } from './ContentTypeList';
-import {ImageInputConfig, ImageField} from '../components/ImageInput';
+import { ImageInputConfig, ImageField } from '../components/ImageInput';
 import get from 'lodash/get';
+import OrderedFormIterator from '../components/OrderedFormIterator';
+
 const ContentTypeTitle = ({ record }) => {
   return <span>Content Type {record ? `"${record.type}"` : ''}</span>;
 };
 const getFieldConfig = (fieldType, source) => {
   switch (fieldType) {
     case 'ImageInput':
-      return <ImageInputConfig source={source}/>;
+      return <ImageInputConfig source={source} />;
     default:
       return <></>;
   }
@@ -33,7 +34,7 @@ const Fields = props => {
       <TextInput source="type" validate={required()} />
       <SelectInput source="icon" label="icon" choices={[{ id: 'BookIcon', name: 'BookIcon' }]} />
       <ArrayInput source="fields">
-        <SimpleFormIterator>
+        <OrderedFormIterator>
           <TextInput required label="Field name" source="title" />
           <SelectInput
             source="fieldType"
@@ -47,16 +48,13 @@ const Fields = props => {
           />
           {getFieldConfig()}
           <FormDataConsumer>
-            {(props) => {
-              return getFieldConfig(
-                get(props, `formData.${props.id}.fieldType`),
-                props.id
-              );
+            {props => {
+              return getFieldConfig(get(props, `formData.${props.id}.fieldType`), props.id);
             }}
           </FormDataConsumer>
           <BooleanInput label="Is required?" source="isRequired" />
           <BooleanInput label="Display in list view?" source="_gridDisplay_" />
-        </SimpleFormIterator>
+        </OrderedFormIterator>
       </ArrayInput>
     </>
   );
