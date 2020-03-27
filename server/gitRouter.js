@@ -22,7 +22,7 @@ module.exports = root => {
     res.send({ data: results, total: files.length });
   });
 
-  router.patch('/modified-files', async (req, res) => {
+  router.put('/modified-files', async (req, res) => {
     try {
       if (
         req.body &&
