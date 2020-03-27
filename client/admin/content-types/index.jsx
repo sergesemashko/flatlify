@@ -9,12 +9,22 @@ import {
   SimpleForm,
   SimpleFormIterator,
   TextInput,
+  FormDataConsumer,
 } from 'react-admin';
 import BookIcon from '@material-ui/icons/Book';
 import { ContentTypeList } from './ContentTypeList';
-
+import {ImageInputConfig} from '../components/ImageInput';
+import get from 'lodash/get';
 const ContentTypeTitle = ({ record }) => {
   return <span>Content Type {record ? `"${record.type}"` : ''}</span>;
+};
+const getFieldConfig = (fieldType, source) => {
+  switch (fieldType) {
+    case 'ImageInput':
+      return <ImageInputConfig source={source}/>;
+    default:
+      return <></>;
+  }
 };
 
 const Fields = props => {
@@ -30,10 +40,22 @@ const Fields = props => {
             label="Field Type"
             defaultValue="TextInput"
             choices={[
-              { id: 'TextInput', name: 'TextInput' },
-              { id: 'RichTextInput', name: 'RichTextInput' },
+              { id: 'TextInput', name: 'Text' },
+              { id: 'RichTextInput', name: 'Rich Text' },
+              { id: 'ImageInput', name: 'Image' },
             ]}
           />
+          {getFieldConfig()}
+          <FormDataConsumer>
+            {(props) => {
+              console.log('FormDataConsumer=', props);
+              console.log('props.getSource()=', props.getSource());
+              return getFieldConfig(
+                get(props, `formData.${props.id}.fieldType`),
+                props.id
+              );
+            }}
+          </FormDataConsumer>
           <BooleanInput label="Is required?" source="isRequired" />
           <BooleanInput label="Display in list view?" source="_gridDisplay_" />
         </SimpleFormIterator>

@@ -11,6 +11,7 @@ import {
 import S from 'string';
 import { Datagrid, List, TextField, PostListActionToolbar, EditButton } from 'ra-ui-materialui';
 import RichTextInput from 'ra-input-rich-text';
+import ImageInput from '../components/ImageInput';
 
 const getFieldComponent = type => {
   switch (type) {
@@ -18,6 +19,8 @@ const getFieldComponent = type => {
       return RichTextInput;
     case 'TextInput':
       return TextInput;
+    case 'ImageInput':
+      return ImageInput;
     default:
       return <></>;
   }
@@ -30,18 +33,19 @@ const createCRUDComponents = contentTypeSettings => {
   const Fields = () => {
     return (
       <>
-        {contentTypeSettings.fields.map((fieldConfig, i) => {
-          const FieldComponent = getFieldComponent(fieldConfig.fieldType);
+        {contentTypeSettings.fields.map(({isRequired, title, fieldType, ...fieldConfig}, i) => {
+          const FieldComponent = getFieldComponent(fieldType);
           return (
             <FieldComponent
               key={i}
-              label={fieldConfig.title}
+              label={title}
               source={
-                S(fieldConfig.title)
+                S(title)
                   .slugify()
                   .camelize().s
               }
-              validate={fieldConfig.isRequired ? required() : undefined}
+              validate={isRequired ? required() : undefined}
+              {...fieldConfig}
             />
           );
         })}
