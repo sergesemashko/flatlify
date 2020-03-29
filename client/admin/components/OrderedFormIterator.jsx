@@ -57,19 +57,21 @@ export class OrderedFormIterator extends Component {
     // but redux-form doesn't provide one (cf https://github.com/erikras/redux-form/issues/2735)
     // so we keep an internal map between the field position and an autoincrement id
     this.nextId = 0;
-    this.ids = props.fields ? props.fields.map(() => this.nextId++) : [];
+    this.state = {
+      ids: props.fields ? props.fields.map(() => this.nextId++) : [],
+    };
   }
 
-  removeField = index => () => {
+  removeField = removedIndex => () => {
     const { fields } = this.props;
-    this.ids.splice(index, 1);
-    fields.remove(index);
+    const ids = this.state.ids.filter((e, i) => i !== removedIndex);
+    this.setState({ ids }, () => fields.remove(removedIndex));
   };
 
   addField = () => {
     const { fields } = this.props;
-    this.ids.push(this.nextId++);
-    fields.push({});
+    const ids = [...this.state.ids, this.nextId++];
+    this.setState({ ids }, () => fields.push({}));
   };
 
   onDragEnd = result => {
@@ -79,9 +81,11 @@ export class OrderedFormIterator extends Component {
     const { fields } = this.props;
     const startIndex = result.source.index;
     const endIndex = result.destination.index;
-    const [removed] = this.ids.splice(startIndex, 1);
-    this.ids.splice(endIndex, 0, removed);
-    fields.move(startIndex, endIndex);
+    const [removed] = this.state.ids.splice(startIndex, 1);
+    const ids = [...this.state.ids];
+
+    ids.splice(endIndex, 0, removed);
+    this.setState({ ids }, () => fields.move(startIndex, endIndex));
   };
 
   render() {
@@ -98,17 +102,19 @@ export class OrderedFormIterator extends Component {
             <ul className={classes.root} ref={provided.innerRef}>
               {submitFailed && error && <span>{error}</span>}
               <TransitionGroup>
-                {fields.map((member, index) => (
-                  <CSSTransition key={`${this.ids[index]}`} timeout={500} classNames="fade">
-                    <DraggableFormInput
-                      id={`${this.ids[index]}`}
-                      index={index}
-                      member={member}
-                      onRemove={this.removeField}
-                      {...sanitizeProps(this.props)}
-                    />
-                  </CSSTransition>
-                ))}
+                {fields.map((member, index) => {
+                  return (
+                    <CSSTransition key={`${this.state.ids[index]}`} timeout={500} classNames="fade">
+                      <DraggableFormInput
+                        id={`${this.state.ids[index]}`}
+                        index={index}
+                        member={member}
+                        onRemove={this.removeField}
+                        {...sanitizeProps(this.props)}
+                      />
+                    </CSSTransition>
+                  );
+                })}
                 {provided.placeholder}
               </TransitionGroup>
               <li className={classes.line}>
