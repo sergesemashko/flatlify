@@ -66,13 +66,19 @@ export const DraggableFormInput = ({
             <MoveIcon />
           </div>
           <section className={classes.form}>
-            {Children.map(children, input => {
+            {Children.map(children, (input, inputIndex) => {
               return (
                 <FormInput
                   basePath={basePath}
                   input={cloneElement(input, {
-                    source: `${member}.${input.props.source}`,
-                    label: input.props.label || input.props.source,
+                    source: input.props.source ? `${member}.${input.props.source}` : member,
+                    index: input.props.source ? undefined : inputIndex,
+                    label:
+                      typeof input.props.label === 'undefined'
+                        ? input.props.source
+                          ? `resources.${resource}.fields.${input.props.source}`
+                          : undefined
+                        : input.props.label,
                   })}
                   record={record}
                   resource={resource}

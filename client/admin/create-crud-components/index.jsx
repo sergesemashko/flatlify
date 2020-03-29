@@ -12,6 +12,7 @@ import S from 'string';
 import { Datagrid, List, TextField, PostListActionToolbar, EditButton } from 'ra-ui-materialui';
 import RichTextInput from 'ra-input-rich-text';
 import ImageInput from '../components/ImageInput';
+import { _ReferenceInput, _ReferenceArrayInput } from '../components/ReferenceInput';
 
 const getFieldComponent = type => {
   switch (type) {
@@ -21,6 +22,10 @@ const getFieldComponent = type => {
       return TextInput;
     case 'ImageInput':
       return ImageInput;
+    case 'ReferenceInput':
+      return _ReferenceInput;
+    case 'ReferenceArrayInput':
+      return _ReferenceArrayInput;
     default:
       return <></>;
   }
@@ -33,7 +38,7 @@ const createCRUDComponents = contentTypeSettings => {
   const Fields = () => {
     return (
       <>
-        {contentTypeSettings.fields.map(({isRequired, title, fieldType, ...fieldConfig}, i) => {
+        {contentTypeSettings.fields.map(({ isRequired, title, fieldType, ...fieldConfig }, i) => {
           const FieldComponent = getFieldComponent(fieldType);
           return (
             <FieldComponent
@@ -52,6 +57,7 @@ const createCRUDComponents = contentTypeSettings => {
       </>
     );
   };
+
   const ContentTypeCreate = props => (
     <Create title="Create a ContentType" {...props}>
       <SimpleForm>
@@ -60,7 +66,6 @@ const createCRUDComponents = contentTypeSettings => {
     </Create>
   );
   const ContentTypeEdit = props => {
-
     return (
       <Edit title={<ContentTypeTitle />} {...props}>
         <SimpleForm>
