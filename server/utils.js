@@ -29,7 +29,7 @@ async function readCollectionList(dirname) {
       if (stat && stat.isFile()) {
         return fse.readJson(filePath, { encoding: 'utf-8' });
       }
-      return null;
+      return [];
     });
 
     let files = await Promise.all(filesPromises);
@@ -37,6 +37,7 @@ async function readCollectionList(dirname) {
     const filteredFiles = files.filter(empty => !!empty);
     return filteredFiles;
   }
+  return [];
 }
 
 async function readCollections(dirname) {
