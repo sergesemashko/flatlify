@@ -13,7 +13,7 @@ import {
 } from 'react-admin';
 import BookIcon from '@material-ui/icons/Book';
 import { ContentTypeList } from './ContentTypeList';
-import {ImageInputConfig} from '../components/ImageInput';
+import {ImageInputConfig, ImageField} from '../components/ImageInput';
 import get from 'lodash/get';
 const ContentTypeTitle = ({ record }) => {
   return <span>Content Type {record ? `"${record.type}"` : ''}</span>;
@@ -48,8 +48,6 @@ const Fields = props => {
           {getFieldConfig()}
           <FormDataConsumer>
             {(props) => {
-              console.log('FormDataConsumer=', props);
-              console.log('props.getSource()=', props.getSource());
               return getFieldConfig(
                 get(props, `formData.${props.id}.fieldType`),
                 props.id

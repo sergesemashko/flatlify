@@ -6,7 +6,7 @@ const express = require('express');
 module.exports = root => {
   const router = express.Router();
 
-  router.get('/modified-files', async (req, res) => {
+  router.get('/', async (req, res) => {
     const pagination = JSON.parse(req.query.pagination);
     const sort = JSON.parse(req.query.sort);
 
@@ -22,7 +22,7 @@ module.exports = root => {
     res.send({ data: results, total: files.length });
   });
 
-  router.patch('/modified-files', async (req, res) => {
+  router.patch('/', async (req, res) => {
     try {
       if (
         req.body &&

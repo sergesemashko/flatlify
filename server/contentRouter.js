@@ -3,13 +3,15 @@ const path = require('path');
 const utils = require('./utils');
 const { orderBy, slice } = require('lodash');
 const { getContentType } = utils;
+const { upload, extractFilesMeta, fileFieldsAppendSrc } = require('./utils/media');
+const uploadMiddleware = upload.any();
 
 const createGetManyBase = root =>
   async function getManyBase(req, res) {
     const contentType = getContentType(req);
 
-    const pagination = JSON.parse(req.query.pagination);
-    const sort = JSON.parse(req.query.sort);
+    const pagination = req.query && req.query.pagination ? JSON.parse(req.query.pagination) : {};
+    const sort = req.query && req.query.sort ? JSON.parse(req.query.sort) : {};
 
     const _start = (pagination.page - 1) * pagination.perPage || 0;
     const _end = pagination.page * pagination.perPage || 25;
@@ -18,7 +20,7 @@ const createGetManyBase = root =>
 
     const contentPath = path.resolve(root, `${contentType}`);
     const files = await utils.readCollectionList(contentPath);
-    const items = slice(orderBy(files, [_sort], [_order]), _start, _end);
+    const items = fileFieldsAppendSrc(slice(orderBy(files, [_sort], [_order]), _start, _end));
 
     res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
     res.setHeader('X-Total-Count', items.length);
@@ -34,8 +36,7 @@ const createGetOneBase = root =>
     const contentType = getContentType(req);
 
     const contentPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
-    const data = await utils.read(contentPath);
-
+    const [data] = fileFieldsAppendSrc([await utils.read(contentPath)]);
     res.send({ data });
   };
 
@@ -56,7 +57,10 @@ const createPatchOneBase = root =>
     const { itemId } = req.params;
     const params = req.body;
 
-    const data = await patch(root, itemId, contentType, params);
+    const data = await patch(root, itemId, contentType, {
+      ...params,
+      ...extractFilesMeta(req.files),
+    });
 
     res.status(200).send({ data });
   };
@@ -81,7 +85,7 @@ const createPutOneBase = root =>
     const contentPath = path.resolve(root, `${contentType}`);
     const items = await utils.readCollectionList(contentPath);
     const newId = items.length ? items[items.length - 1].id + 1 : 0;
-    const newContentType = { ...req.body.data, id: newId };
+    const newContentType = { ...req.body, ...extractFilesMeta(req.files), id: newId };
 
     const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
     await utils.save(itemPath, newContentType);
@@ -133,11 +137,11 @@ module.exports = (methods = {}, root = __dirname) => {
 
   router.get('/:contentType/:itemId', getOne);
 
-  router.patch('/:contentType/:itemId', patchOne);
+  router.patch('/:contentType/:itemId', uploadMiddleware, patchOne);
 
-  router.patch('/:contentType', patchMany);
+  router.patch('/:contentType', uploadMiddleware, patchMany);
 
-  router.put('/:contentType', putOne);
+  router.post('/:contentType', uploadMiddleware, putOne);
 
   router.delete('/:contentType/:itemId', deleteOne);
 

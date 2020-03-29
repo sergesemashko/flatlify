@@ -2,6 +2,7 @@ import React from 'react';
 import { createSelector } from 'reselect';
 import { DataProvider } from './dataProvider';
 import contentTypesActions from './content-types';
+import mediaLibraryActions from './media-library';
 import modifiedFilesActions from './modified-files';
 import createCrudComponents from './create-crud-components';
 
