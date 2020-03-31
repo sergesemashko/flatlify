@@ -73,12 +73,7 @@ export const DraggableFormInput = ({
                   input={cloneElement(input, {
                     source: input.props.source ? `${member}.${input.props.source}` : member,
                     index: input.props.source ? undefined : inputIndex,
-                    label:
-                      typeof input.props.label === 'undefined'
-                        ? input.props.source
-                          ? `resources.${resource}.fields.${input.props.source}`
-                          : undefined
-                        : input.props.label,
+                    label: getLabel(input, resource),
                   })}
                   record={record}
                   resource={resource}
@@ -97,6 +92,18 @@ export const DraggableFormInput = ({
     }}
   </Draggable>
 );
+
+function getLabel(input, resource) {
+  if (typeof input.props.label === 'undefined') {
+    if (input.props.source) {
+      return `resources.${resource}.fields.${input.props.source}`;
+    } else {
+      return undefined;
+    }
+  } else {
+    return input.props.label;
+  }
+}
 
 DraggableFormInput.propTypes = {
   basePath: PropTypes.string,

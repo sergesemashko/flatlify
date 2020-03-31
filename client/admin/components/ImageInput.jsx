@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import { BooleanInput, required, TextInput, NumberInput, ImageInput } from 'react-admin';
 import FilePreviewField from './FilePreviewField';
 
-export const ImageInputConfig = ({ source }) => {
+export const ImageInputConfig = ({ getSource }) => {
   return (
     <>
       <TextInput
-        source={`${source}.accept`}
+        source={`${getSource('accept')}`}
         require={required()}
         label="Accept. MIME type"
         initialValue="image/*"
       />
       {/*<BooleanInput label="Mutliple" source={`${source}.multiple`}/>*/}
-      <TextInput source={`${source}.placeholder`} label="Placeholder Text" />
+      <TextInput source={`${getSource('placeholder')}`} label="Placeholder Text" />
       {/*<NumberInput source={`${source}.minSize`} label="Min. Size (MB)"/>*/}
       {/*<NumberInput source={`${source}.maxSize`} label="Max. Size (MB)"/>*/}
     </>

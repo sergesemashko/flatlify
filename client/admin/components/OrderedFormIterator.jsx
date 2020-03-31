@@ -81,8 +81,8 @@ export class OrderedFormIterator extends Component {
     const { fields } = this.props;
     const startIndex = result.source.index;
     const endIndex = result.destination.index;
-    const [removed] = this.state.ids.splice(startIndex, 1);
     const ids = [...this.state.ids];
+    const [removed] = ids.splice(startIndex, 1);
 
     ids.splice(endIndex, 0, removed);
     this.setState({ ids }, () => fields.move(startIndex, endIndex));
