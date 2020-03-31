@@ -8,24 +8,36 @@ import { useForm } from 'react-final-form';
 export const _ReferenceInput = props => {
   const { refTypeId, source, displayValue } = props;
   const contentTypes = useSelector(contentTypesSelector);
-  const type = contentTypes.find(contentType => contentType.id === refTypeId)?.type.toLowerCase();
-  return (
-    <ReferenceInput reference={type} source={source}>
-      <SelectInput allowEmpty optionText={displayValue} label="Content Type" />
-    </ReferenceInput>
-  );
+  const contentType = contentTypes.find(contentType => contentType.id === refTypeId);
+
+  if (!contentType) {
+    return <> </>;
+  } else {
+    const type = contentType.type.toLowerCase();
+
+    return (
+      <ReferenceInput reference={type} source={source}>
+        <SelectInput allowEmpty optionText={displayValue} label="Content Type" />
+      </ReferenceInput>
+    );
+  }
 };
 
 export const _ReferenceArrayInput = props => {
   const { refTypeId, source, displayValue } = props;
   const contentTypes = useSelector(contentTypesSelector);
-  const type = contentTypes.find(contentType => contentType.id === refTypeId)?.type.toLowerCase();
+  const contentType = contentTypes.find(contentType => contentType.id === refTypeId);
+  if (!contentType) {
+    return <> </>;
+  } else {
+    const type = contentType.type.toLowerCase();
 
-  return (
-    <ReferenceArrayInput reference={type} source={source}>
-      <SelectArrayInput optionText={displayValue} label="Content Types" />
-    </ReferenceArrayInput>
-  );
+    return (
+      <ReferenceArrayInput reference={type} source={source}>
+        <SelectArrayInput optionText={displayValue} label="Content Types" />
+      </ReferenceArrayInput>
+    );
+  }
 };
 
 export const ReferenceInputConfig = props => {
@@ -41,7 +53,7 @@ export const ReferenceInputConfig = props => {
     <>
       <ReferenceInput
         reference="content-types"
-        source={`${getSource('refTypeId')}.`}
+        source={`${getSource('refTypeId')}`}
         label="Content Type"
         onChange={() => form.change(displayValueSource, null)}
       >
