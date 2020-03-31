@@ -67,7 +67,6 @@
     "redux": "^4.0.5",
     "reselect": "^4.0.0",
     "string": "^3.3.3",
-    "typescript": "^3.8.3",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
