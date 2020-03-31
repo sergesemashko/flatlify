@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const utils = require('./utils');
+const utils = require('./utils/utils');
 const { orderBy, slice } = require('lodash');
 const { getContentType } = utils;
 const { upload, extractFilesMeta, fileFieldsAppendSrc } = require('./utils/media');
@@ -84,7 +84,8 @@ const createCreateOneBase = root =>
 
     const contentPath = path.resolve(root, `${contentType}`);
     const items = await utils.readCollectionList(contentPath);
-    const newId = items.length ? parseInt(items[items.length - 1].id, 10) + 1 : 0;
+    const newId = utils.getNewIdFromDatabaseItems(items);
+
     const newContentType = { ...req.body, ...extractFilesMeta(req.files), id: newId };
 
     const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
