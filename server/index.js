@@ -3,8 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const contentRouter = require('./contentRouter');
-const contentTypesRouter = require('./contentTypesRouter');
+const { router: contentRouter } = require('./contentRouter');
+const { router: contentTypesRouter } = require('./contentTypesRouter');
 const gitRouter = require('./gitRouter');
 
 const app = express();
