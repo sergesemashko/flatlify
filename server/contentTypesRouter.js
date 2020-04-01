@@ -13,12 +13,12 @@ const createCreateOne = root =>
     const items = await utils.readCollectionList(contentPath);
     const newId = items.length ? items[items.length - 1].id + 1 : 0;
     const newContentType = {
-      ...req.body.data,
+      ...req.body,
       id: newId,
     };
-
+    console.log(req.body);
     const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
-    const newDirPath = path.resolve(root, `${req.body.data.type.toLowerCase()}`);
+    const newDirPath = path.resolve(root, `${req.body.type.toLowerCase()}`);
     await Promise.all([utils.save(itemPath, newContentType, utils.ensureDir(newDirPath))]);
 
     res.send(newContentType);
