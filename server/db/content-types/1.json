@@ -1,7 +1,0 @@
-{
-  "type": "Media",
-  "fields": [
-    { "fieldType": "TextInput", "title": "field1", "isRequired": false, "_gridDisplay_": true }
-  ],
-  "id": 1
-}

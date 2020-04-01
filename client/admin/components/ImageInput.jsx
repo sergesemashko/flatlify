@@ -12,7 +12,7 @@ import FilePreviewField from './FilePreviewField';
 export const ImageInputConfig = ({source}) => {
   return <>
     <TextInput source={`${source}.accept`} require={required()} label="Accept. MIME type" initialValue="image/*" />
-    {/*<BooleanInput label="Mutliple" source={`${source}.multiple`}/>*/}
+    <BooleanInput label="Mutliple" source={`${source}.multiple`}/>
     <TextInput source={`${source}.placeholder`} label="Placeholder Text" />
     {/*<NumberInput source={`${source}.minSize`} label="Min. Size (MB)"/>*/}
     {/*<NumberInput source={`${source}.maxSize`} label="Max. Size (MB)"/>*/}

@@ -84,7 +84,7 @@ const createPutOneBase = root =>
 
     const contentPath = path.resolve(root, `${contentType}`);
     const items = await utils.readCollectionList(contentPath);
-    const newId = items.length ? items[items.length - 1].id + 1 : 0;
+    const newId = items.length ? parseInt(items[items.length - 1].id, 10) + 1 : 0;
     const newContentType = { ...req.body, ...extractFilesMeta(req.files), id: newId };
 
     const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
