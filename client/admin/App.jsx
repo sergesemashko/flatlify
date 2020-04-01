@@ -26,25 +26,23 @@ function Resources() {
   });
 
   const contentTypes = useSelector(contentTypesSelector);
-  const computedContentTypes = useRef({});
   const [resources, setResources] = useState([]);
   const contentTypesString = JSON.stringify(contentTypes);
 
   useEffect(() => {
-    contentTypes.forEach(contentType => {
-      if (!computedContentTypes.current[contentType.type]) {
-        const resource = (
-          <Resource
-            key={`type-${contentType.type}`}
-            name={`${String(contentType.type).toLowerCase()}`}
-            {...createCrudComponents(contentType)}
-          />
-        );
-        computedContentTypes.current[contentType.type] = resource;
-      }
+    const resources = contentTypes.map(contentType => {
+      return (
+        <Resource
+          key={`type-${contentType.type}`}
+          name={`${String(contentType.type).toLowerCase()}`}
+          {...createCrudComponents(contentType)}
+        />
+      );
     });
-    setResources(Object.values(computedContentTypes.current));
-  }, [contentTypes, contentTypesString]);
+    setResources(resources);
+    // do not add contentTypes in dependencies, it causes infinite rerenders if reference input is on the page
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentTypesString]);
 
   return (
     <AdminUI>
