@@ -66,7 +66,6 @@ const Fields = props => {
             {props => {
               return getFieldConfig(
                 get(props, `formData.${props.id}.fieldType`),
-                props.id,
                 props.getSource,
                 props.scopedFormData,
               );
