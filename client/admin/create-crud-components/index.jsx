@@ -1,6 +1,10 @@
 import React from 'react';
 import {
+  SingleFieldList,
   ArrayInput,
+  ChipField,
+  ReferenceField,
+  ReferenceArrayField,
   BooleanInput,
   Create,
   Edit,
@@ -13,6 +17,8 @@ import { Datagrid, List, TextField, PostListActionToolbar, EditButton } from 'ra
 import RichTextInput from 'ra-input-rich-text';
 import ImageInput from '../components/ImageInput';
 import { _ReferenceInput, _ReferenceArrayInput } from '../components/ReferenceInput';
+import { contentTypesSelector } from '../../selectors/adminSelectors';
+import { useSelector } from 'react-redux';
 
 const getFieldComponent = type => {
   switch (type) {
@@ -76,27 +82,62 @@ const createCRUDComponents = contentTypeSettings => {
     );
   };
 
-  const GenericTypeList = props => (
-    <List {...props}>
-      <Datagrid>
-        <TextField source="id" />
-        {contentTypeSettings.fields
-          .filter(fieldConfig => !!fieldConfig._gridDisplay_)
-          .map(fieldConfig => {
-            return (
-              <TextField
-                source={
-                  S(fieldConfig.title)
-                    .slugify()
-                    .camelize().s
-                }
-              />
-            );
-          })}
-        <EditButton />
-      </Datagrid>
-    </List>
-  );
+  const GenericTypeList = props => {
+    const contentTypes = useSelector(contentTypesSelector);
+    return (
+      <List {...props}>
+        <Datagrid>
+          <TextField source="id" />
+          {contentTypeSettings.fields
+            .filter(fieldConfig => !!fieldConfig._gridDisplay_)
+            .map(fieldConfig => {
+              const Field = getField(fieldConfig, contentTypes);
+
+              return Field;
+            })}
+          <EditButton />
+        </Datagrid>
+      </List>
+    );
+  };
+
+  function getField(fieldConfig, contentTypes) {
+    const source = S(fieldConfig.title)
+      .slugify()
+      .camelize().s;
+
+    switch (fieldConfig.fieldType) {
+      case 'ReferenceInput': {
+        const type = getType(contentTypes, fieldConfig.refTypeId);
+
+        return (
+          <ReferenceField label={fieldConfig.displayValue} source={source} reference={type}>
+            <TextField source={fieldConfig.displayValue} />
+          </ReferenceField>
+        );
+      }
+      case 'ReferenceArrayInput': {
+        const type = getType(contentTypes, fieldConfig.refTypeId);
+
+        return (
+          <ReferenceArrayField label={fieldConfig.displayValue} source={source} reference={type}>
+            <SingleFieldList>
+              <ChipField source={fieldConfig.displayValue} />
+            </SingleFieldList>
+          </ReferenceArrayField>
+        );
+      }
+      default:
+        return <TextField source={source} />;
+    }
+  }
+
+  function getType(contentTypes, searchTypeId) {
+    const contentType = contentTypes.find(contentType => contentType.id === searchTypeId);
+    const type = contentType.type.toLowerCase();
+    return type;
+  }
+
   return {
     list: GenericTypeList,
     create: ContentTypeCreate,

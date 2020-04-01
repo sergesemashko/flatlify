@@ -16,7 +16,6 @@ const createCreateOne = root =>
       ...req.body,
       id: newId,
     };
-    console.log(req.body);
     const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
     const newDirPath = path.resolve(root, `${req.body.type.toLowerCase()}`);
     await Promise.all([utils.save(itemPath, newContentType, utils.ensureDir(newDirPath))]);
