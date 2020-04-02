@@ -1,9 +1,9 @@
 {
-  "type": "Article",
+  "type": "Video",
   "fields": [
-    { "fieldType": "TextInput", "title": "field", "isRequired": false, "_gridDisplay_": false },
-    { "fieldType": "TextInput", "title": "name2", "isRequired": false, "_gridDisplay_": false },
-    { "fieldType": "TextInput", "title": "field3", "_gridDisplay_": false }
+    { "fieldType": "TextInput", "title": "Title", "isRequired": true, "_gridDisplay_": true },
+    { "fieldType": "RichTextInput", "title": "Description" },
+    { "fieldType": "ImageInput", "title": "Cover", "accept": "image/*" }
   ],
   "id": 0
 }

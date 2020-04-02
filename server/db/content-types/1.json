@@ -1,7 +1,10 @@
 {
-  "type": "Media",
+  "type": "Episode",
   "fields": [
-    { "fieldType": "TextInput", "title": "field1", "isRequired": false, "_gridDisplay_": true }
+    { "fieldType": "TextInput", "title": "Title", "isRequired": true },
+    { "fieldType": "TextInput", "title": "Episode Number", "isRequired": true },
+    { "fieldType": "RichTextInput", "title": "Description" },
+    { "fieldType": "ImageInput", "title": "Cover", "accept": "image/*" }
   ],
   "id": 1
 }
