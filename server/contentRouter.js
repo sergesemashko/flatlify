@@ -140,11 +140,11 @@ module.exports = {
 
     router.get('/:contentType/:itemId', getOne);
 
-    router.put('/:contentType/:itemId', updateOne);
+    router.put('/:contentType/:itemId', uploadMiddleware, updateOne);
 
-    router.put('/:contentType', updateMany);
+    router.put('/:contentType', uploadMiddleware, updateMany);
 
-    router.post('/:contentType', createOne);
+    router.post('/:contentType', uploadMiddleware, createOne);
 
     router.delete('/:contentType/:itemId', deleteOne);
 
