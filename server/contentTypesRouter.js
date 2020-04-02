@@ -1,10 +1,11 @@
 const path = require('path');
 const fs = require('fs').promises;
 const utils = require('./utils');
-const baseRouter = require('./contentRouter');
+const { router: baseRouter } = require('./contentRouter');
 const { getContentType } = utils;
+const { createGetOneBase, createGetManyBase } = require('./contentRouter');
 
-const createPutOne = root =>
+const createCreateOne = root =>
   async function putOne(req, res) {
     const contentType = getContentType(req);
 
@@ -12,18 +13,17 @@ const createPutOne = root =>
     const items = await utils.readCollectionList(contentPath);
     const newId = items.length ? items[items.length - 1].id + 1 : 0;
     const newContentType = {
-      ...req.body.data,
+      ...req.body,
       id: newId,
     };
-
     const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
-    const newDirPath = path.resolve(root, `${req.body.data.type}`);
+    const newDirPath = path.resolve(root, `${req.body.type.toLowerCase()}`);
     await Promise.all([utils.save(itemPath, newContentType, utils.ensureDir(newDirPath))]);
 
     res.send(newContentType);
   };
 
-async function patch(root, itemId, contentType, updateParams) {
+async function update(root, itemId, contentType, updateParams) {
   const contentPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
   const item = await utils.read(contentPath);
   const newItem = {
@@ -32,32 +32,32 @@ async function patch(root, itemId, contentType, updateParams) {
   };
 
   if (updateParams.type) {
-    const contentFolderPath = path.resolve(root, 'content', item.type);
-    const newContentFolderPath = path.resolve(root, 'content', updateParams.type);
+    const contentFolderPath = path.resolve(root, 'content', item.type.toLowerCase());
+    const newContentFolderPath = path.resolve(root, 'content', updateParams.type.toLowerCase());
     await fs.rename(contentFolderPath, newContentFolderPath);
   }
   await utils.save(contentPath, newItem);
   return newItem;
 }
 
-const createPatchOne = root =>
+const createUpdateOne = root =>
   async function patchOneBase(req, res) {
     const contentType = getContentType(req);
     const { itemId } = req.params;
     const params = req.body;
 
-    const data = await patch(root, itemId, contentType, params);
+    const data = await update(root, itemId, contentType, params);
 
     res.status(200).send({ data });
   };
 
-const createPatchMany = root =>
+const createUpdateMany = root =>
   async function patchManyBase(req, res) {
     const contentType = getContentType(req);
     const params = req.body;
     const { ids } = req.query;
 
-    const updatePromises = ids.map(id => patch(root, id, contentType, params));
+    const updatePromises = ids.map(id => update(root, id, contentType, params));
 
     await Promise.all(updatePromises);
 
@@ -67,7 +67,7 @@ const createPatchMany = root =>
 async function deleteItem(root, contentType, itemId) {
   const contentItemPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
   const { type } = await utils.read(contentItemPath);
-  const contentFolderPath = path.resolve(root, `${type}`);
+  const contentFolderPath = path.resolve(root, `${type.toLowerCase()}`);
 
   await Promise.all([utils.remove(contentItemPath), utils.remove(contentFolderPath)]);
   return {};
@@ -93,14 +93,19 @@ const createDeleteMany = root =>
 
     res.send({ data: {} });
   };
-module.exports = root =>
-  baseRouter(
-    {
-      deleteOne: createDeleteOne(root),
-      deleteMany: createDeleteMany(root),
-      putOne: createPutOne(root),
-      patchMany: createPatchMany(root),
-      patchOne: createPatchOne(root),
-    },
-    root,
-  );
+
+module.exports = {
+  router: root =>
+    baseRouter(
+      {
+        getOne: createGetOneBase(root),
+        getMany: createGetManyBase(root),
+        deleteOne: createDeleteOne(root),
+        deleteMany: createDeleteMany(root),
+        createOne: createCreateOne(root),
+        updateMany: createUpdateMany(root),
+        updateOne: createUpdateOne(root),
+      },
+      root,
+    ),
+};

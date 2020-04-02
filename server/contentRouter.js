@@ -40,7 +40,7 @@ const createGetOneBase = root =>
     res.send({ data });
   };
 
-async function patch(root, itemId, contentType, updateParams) {
+async function update(root, itemId, contentType, updateParams) {
   const contentPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
   const item = await utils.read(contentPath);
   const newItem = {
@@ -51,13 +51,13 @@ async function patch(root, itemId, contentType, updateParams) {
   return newItem;
 }
 
-const createPatchOneBase = root =>
-  async function patchOneBase(req, res) {
+const createUpdateOneBase = root =>
+  async function updateOneBase(req, res) {
     const contentType = getContentType(req);
     const { itemId } = req.params;
     const params = req.body;
 
-    const data = await patch(root, itemId, contentType, {
+    const data = await update(root, itemId, contentType, {
       ...params,
       ...extractFilesMeta(req.files),
     });
@@ -65,21 +65,21 @@ const createPatchOneBase = root =>
     res.status(200).send({ data });
   };
 
-const createPatchManyBase = root =>
-  async function patchManyBase(req, res) {
+const createUpdateManyBase = root =>
+  async function updateManyBase(req, res) {
     const contentType = getContentType(req);
     const params = req.body;
     const { ids } = req.query;
 
-    const updatePromises = ids.map(id => patch(root, id, contentType, params));
+    const updatePromises = ids.map(id => update(root, id, contentType, params));
 
     await Promise.all(updatePromises);
 
     res.status(200).send({ data: ids });
   };
 
-const createPutOneBase = root =>
-  async function putOneBase(req, res) {
+const createCreateOneBase = root =>
+  async function createOneBase(req, res) {
     const contentType = getContentType(req);
 
     const contentPath = path.resolve(root, `${contentType}`);
@@ -121,31 +121,35 @@ const createDeleteManyBase = root =>
     res.send({ data: {} });
   };
 
-module.exports = (methods = {}, root = __dirname) => {
-  const {
-    getMany = createGetManyBase(root),
-    getOne = createGetOneBase(root),
-    patchOne = createPatchOneBase(root),
-    patchMany = createPatchManyBase(root),
-    putOne = createPutOneBase(root),
-    deleteOne = createDeleteOneBase(root),
-    deleteMany = createDeleteManyBase(root),
-  } = methods;
-  const router = express.Router();
+module.exports = {
+  createGetManyBase,
+  createGetOneBase,
+  router: (methods = {}, root = __dirname) => {
+    const {
+      getMany = createGetManyBase(root),
+      getOne = createGetOneBase(root),
+      updateOne = createUpdateOneBase(root),
+      updateMany = createUpdateManyBase(root),
+      createOne = createCreateOneBase(root),
+      deleteOne = createDeleteOneBase(root),
+      deleteMany = createDeleteManyBase(root),
+    } = methods;
+    const router = express.Router();
 
-  router.get('/:contentType', getMany);
+    router.get('/:contentType', getMany);
 
-  router.get('/:contentType/:itemId', getOne);
+    router.get('/:contentType/:itemId', getOne);
 
-  router.patch('/:contentType/:itemId', uploadMiddleware, patchOne);
+    router.put('/:contentType/:itemId', updateOne);
 
-  router.patch('/:contentType', uploadMiddleware, patchMany);
+    router.put('/:contentType', updateMany);
 
-  router.post('/:contentType', uploadMiddleware, putOne);
+    router.post('/:contentType', createOne);
 
-  router.delete('/:contentType/:itemId', deleteOne);
+    router.delete('/:contentType/:itemId', deleteOne);
 
-  router.delete('/:contentType', deleteMany);
+    router.delete('/:contentType', deleteMany);
 
-  return router;
+    return router;
+  },
 };

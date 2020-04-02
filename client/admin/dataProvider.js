@@ -78,7 +78,9 @@ export const DataProvider = (baseURL = 'localhost:3020') => ({
     const response = await axios.get(getRouteURL(baseURL, resource), { params });
     return response.data;
   },
-  getManyReference: async (resource, params) => {},
+  getManyReference: async (resource, params) => {
+    console.error('getManyReference');
+  },
   create: async (resource, params) => {
     const { data, headers } = processData(params);
     const response = await axios.post(getRouteURL(baseURL, resource), data, { headers });
@@ -88,13 +90,13 @@ export const DataProvider = (baseURL = 'localhost:3020') => ({
     const id = params.id;
     const { data, headers } = processData(params);
 
-    const response = await axios.patch(`${getRouteURL(baseURL, resource)}/${id}`, data, {
+    const response = await axios.put(`${getRouteURL(baseURL, resource)}/${id}`, data, {
       headers,
     });
     return response.data;
   },
   updateMany: async (resource, params) => {
-    const response = await axios.patch(getRouteURL(baseURL, resource), {
+    const response = await axios.put(getRouteURL(baseURL, resource), {
       ...params,
       author: { name: 'name', email: 'email' },
     });
