@@ -17,8 +17,8 @@ const getFileFields = params => {
     if (params.data.hasOwnProperty(fieldName)) {
       if (Array.isArray(params.data[fieldName])) {
         params.data[fieldName].forEach((fieldEntry, i) => {
-          if (fieldEntry[i]?.rawFile instanceof File) {
-            fileFields[`${fieldName}[${i}]`] = fieldEntry[i].rawFile;
+          if (fieldEntry?.rawFile instanceof File) {
+            fileFields[fieldName] = [fieldEntry.rawFile, ...(fileFields[fieldName] || [])];
           }
         });
       } else if (params.data[fieldName]?.rawFile instanceof File) {
@@ -41,7 +41,13 @@ const processData = params => {
     const formData = new FormData();
     for (const fieldName in data) {
       if (fileFields[fieldName]) {
-        formData.append(fieldName, fileFields[fieldName]);
+        if (Array.isArray(fileFields[fieldName])) {
+          fileFields[fieldName].forEach((file, i) => {
+            formData.append(`${fieldName}`, file);
+          });
+        } else {
+          formData.append(fieldName, fileFields[fieldName]);
+        }
       } else {
         formData.append(fieldName, data[fieldName]);
       }

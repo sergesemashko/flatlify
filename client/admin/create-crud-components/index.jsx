@@ -71,6 +71,7 @@ const createCRUDComponents = contentTypeSettings => {
       </SimpleForm>
     </Create>
   );
+
   const ContentTypeEdit = props => {
     return (
       <Edit title={<ContentTypeTitle />} {...props}>

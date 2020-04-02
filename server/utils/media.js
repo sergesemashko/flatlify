@@ -22,20 +22,31 @@ const storage = multer.diskStorage({
   async filename(req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const fileMeta = path.parse(file.originalname);
-    cb(null, `${fileMeta.name}-${uniqueSuffix}${fileMeta.ext ? `.${fileMeta.ext}` : ''}`);
+    cb(null, `${fileMeta.name}-${uniqueSuffix}${fileMeta.ext}`);
   },
 });
 const upload = multer({ storage });
 
-const fileFieldsAppendSrc = (entries = []) => {
-  return entries.map(entry => {
-    const updatedEntry = { ...entry };
-    for (const fieldName in entry) {
-      if (get(entry[fieldName], 'filename')) {
-        updatedEntry[fieldName] = {
-          ...updatedEntry[fieldName],
-          src: `${process.env.MEDIA_PUBLIC_BASE_URL}${updatedEntry[fieldName].relativeSrc}`,
-        };
+const appendSrc = file => {
+  return {
+    ...file,
+    src: `${process.env.MEDIA_PUBLIC_BASE_URL}${file.relativeSrc}`,
+  };
+};
+
+const fileFieldsAppendSrc = (files = []) => {
+  return files.map(file => {
+    const updatedEntry = { ...file };
+    for (const fieldName in file) {
+      if (Array.isArray(file[fieldName])) {
+        updatedEntry[fieldName] = file[fieldName].map(field => {
+          if (get(field, 'filename')) {
+            return appendSrc(field);
+          }
+          return field;
+        });
+      } else if (get(file[fieldName], 'filename')) {
+        updatedEntry[fieldName] = appendSrc(updatedEntry[fieldName]);
       }
     }
     return updatedEntry;
@@ -44,12 +55,21 @@ const fileFieldsAppendSrc = (entries = []) => {
 
 const extractFilesMeta = (files = []) => {
   return files.reduce((result, file) => {
-    result[file.fieldname] = {
+    const newFieldValue = {
       relativeSrc: `/${path.relative(root, file.path)}`,
       filename: file.filename,
       size: file.size,
       mimetype: file.mimetype,
     };
+    if (typeof result[file.fieldname] !== 'undefined') {
+      if (Array.isArray(result[file.fieldname])) {
+        result[file.fieldname] = [...result[file.fieldname], newFieldValue];
+      } else {
+        result[file.fieldname] = [result[file.fieldname], newFieldValue];
+      }
+    } else {
+      result[file.fieldname] = newFieldValue;
+    }
     return result;
   }, {});
 };
