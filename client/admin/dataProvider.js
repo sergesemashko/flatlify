@@ -72,7 +72,9 @@ export const DataProvider = (baseURL = 'localhost:3020') => ({
     const response = await axios.get(getRouteURL(baseURL, resource), { params });
     return response.data;
   },
-  getManyReference: async (resource, params) => {},
+  getManyReference: async (resource, params) => {
+    console.error('getManyReference');
+  },
   create: async (resource, params) => {
     const { data, headers } = processData(params);
     const response = await axios.post(getRouteURL(baseURL, resource), data, { headers });
