@@ -67,9 +67,9 @@ function getNewIdFromDatabaseItems(items) {
     return 0;
   }
   if (items.length === 1) {
-    return items[0].id + 1;
+    return Number(items[0].id) + 1;
   }
-  const maxId = Math.max(...items.map(item => item.id));
+  const maxId = Math.max(...items.map(item => Number(item.id)));
   return maxId + 1;
 }
 
