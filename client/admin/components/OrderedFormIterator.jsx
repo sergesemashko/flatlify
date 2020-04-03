@@ -65,13 +65,15 @@ export class OrderedFormIterator extends Component {
   removeField = removedIndex => () => {
     const { fields } = this.props;
     const ids = this.state.ids.filter((e, i) => i !== removedIndex);
-    this.setState({ ids }, () => fields.remove(removedIndex));
+    fields.remove(removedIndex);
+    this.setState({ ids });
   };
 
   addField = () => {
     const { fields } = this.props;
     const ids = [...this.state.ids, this.nextId++];
-    this.setState({ ids }, () => fields.push({}));
+    fields.push({});
+    this.setState({ ids });
   };
 
   onDragEnd = result => {

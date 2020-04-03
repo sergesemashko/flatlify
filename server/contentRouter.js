@@ -84,7 +84,7 @@ const createCreateOneBase = root =>
 
     const contentPath = path.resolve(root, `${contentType}`);
     const items = await utils.readCollectionList(contentPath);
-    const newId = items.length ? items[items.length - 1].id + 1 : 0;
+    const newId = items.length ? parseInt(items[items.length - 1].id, 10) + 1 : 0;
     const newContentType = { ...req.body, ...extractFilesMeta(req.files), id: newId };
 
     const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
@@ -140,11 +140,11 @@ module.exports = {
 
     router.get('/:contentType/:itemId', getOne);
 
-    router.put('/:contentType/:itemId', updateOne);
+    router.put('/:contentType/:itemId', uploadMiddleware, updateOne);
 
-    router.put('/:contentType', updateMany);
+    router.put('/:contentType', uploadMiddleware, updateMany);
 
-    router.post('/:contentType', createOne);
+    router.post('/:contentType', uploadMiddleware, createOne);
 
     router.delete('/:contentType/:itemId', deleteOne);
 

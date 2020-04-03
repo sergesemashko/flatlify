@@ -21,11 +21,10 @@ app.use('/content-types', contentTypesRouter(contentTypesRoot));
 app.use('/modified-files', gitRouter(root));
 
 const contentRoot = path.resolve(root, 'server/db/content');
-const mediaRoot = path.resolve(root, 'server/db');
 app.use('/content', contentRouter({}, contentRoot));
 app.use('/public', express.static(path.resolve(__dirname, '..', 'public')));
 
 app.listen(port, err => {
-  console.log(`Server is running on: http://localhost:${port}`);
+  console.info(`Server is running on: http://localhost:${port}`);
   if (err) throw err;
 });
