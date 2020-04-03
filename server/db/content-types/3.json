@@ -1,0 +1,1 @@
+{"type":"Show","fields":[{"fieldType":"TextInput","title":"Title","isRequired":true},{"fieldType":"TextInput","title":"Description","isRequired":true},{"fieldType":"TextInput","title":"Cover"}],"id":3}
