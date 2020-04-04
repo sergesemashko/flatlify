@@ -34,6 +34,8 @@ async function update(root, itemId, contentType, updateParams) {
   if (updateParams.type) {
     const contentFolderPath = path.resolve(root, 'content', item.type.toLowerCase());
     const newContentFolderPath = path.resolve(root, 'content', updateParams.type.toLowerCase());
+
+    utils.ensureDir(contentFolderPath);
     await fs.rename(contentFolderPath, newContentFolderPath);
   }
   await utils.save(contentPath, newItem);
