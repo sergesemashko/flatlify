@@ -3,7 +3,8 @@
   "fields": [
     { "fieldType": "TextInput", "title": "Title", "isRequired": true, "_gridDisplay_": true },
     { "fieldType": "RichTextInput", "title": "Description" },
-    { "fieldType": "ImageInput", "title": "Cover", "accept": "image/*" }
+    { "fieldType": "ImageInput", "title": "Cover", "accept": "image/*", "isRequired": true },
+    { "fieldType": "TextInput", "title": "href", "isRequired": true }
   ],
   "id": 0
 }
