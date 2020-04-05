@@ -15,5 +15,9 @@
     "mimetype": "image/jpeg",
     "src": "http://localhost:3020/public/uploads/2020/4/5/TheVoice-S18-Logo-1920x1080-1586122702628-448518999.jpg"
   },
-  "id": 1
+  "id": 1,
+  "episodes": [
+    3,
+    4
+  ]
 }
