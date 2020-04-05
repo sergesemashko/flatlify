@@ -6,7 +6,8 @@
     "relativeSrc": "/public/uploads/2020/4/5/200326_4139944_The_Battles_Part_2-1586122966469-5604871.jpg",
     "filename": "200326_4139944_The_Battles_Part_2-1586122966469-5604871.jpg",
     "size": 13994,
-    "mimetype": "image/jpeg"
+    "mimetype": "image/jpeg",
+    "src": "http://localhost:3020/public/uploads/2020/4/5/200326_4139944_The_Battles_Part_2-1586122966469-5604871.jpg"
   },
   "id": 3
 }
