@@ -6,7 +6,11 @@
     "relativeSrc": "/public/uploads/2020/4/5/TheVoice-S18-Logo-1920x1080-1586122657679-385422615.jpg",
     "filename": "TheVoice-S18-Logo-1920x1080-1586122657679-385422615.jpg",
     "size": 179396,
-    "mimetype": "image/jpeg"
+    "mimetype": "image/jpeg",
+    "src": "http://localhost:3020/public/uploads/2020/4/5/TheVoice-S18-Logo-1920x1080-1586122657679-385422615.jpg"
   },
-  "id": 1
+  "id": 1,
+  "seasons": [
+    1
+  ]
 }
