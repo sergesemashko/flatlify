@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const utils = require('./utils/utils');
+const utils = require('./utils/common');
 const { orderBy, slice } = require('lodash');
 const { getContentType } = utils;
 const { upload, extractFilesMeta, fileFieldsAppendSrc } = require('./utils/media');

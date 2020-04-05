@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs').promises;
-const utils = require('./utils/utils');
+const utils = require('./utils/common');
 const { router: baseRouter } = require('./contentRouter');
 const { getContentType } = utils;
 const { createGetOneBase, createGetManyBase } = require('./contentRouter');
