@@ -1,10 +1,28 @@
 {
   "type": "Show",
   "fields": [
-    { "fieldType": "TextInput", "title": "Title", "isRequired": true, "_gridDisplay_": true },
-    { "fieldType": "TextInput", "title": "Subhead", "isRequired": false },
-    { "fieldType": "TextInput", "title": "Description", "isRequired": true },
-    { "fieldType": "ImageInput", "title": "Cover", "accept": "image/*", "isRequired": true },
+    {
+      "fieldType": "TextInput",
+      "title": "Title",
+      "isRequired": true,
+      "_gridDisplay_": true
+    },
+    {
+      "fieldType": "TextInput",
+      "title": "Subhead",
+      "isRequired": false
+    },
+    {
+      "fieldType": "RichTextInput",
+      "title": "Description",
+      "isRequired": true
+    },
+    {
+      "fieldType": "ImageInput",
+      "title": "Cover",
+      "accept": "image/*",
+      "isRequired": true
+    },
     {
       "fieldType": "ReferenceArrayInput",
       "title": "Seasons",
