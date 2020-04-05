@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs').promises;
+const gitUtils = require('./git-utils');
 const utils = require('./utils/common');
 const { router: baseRouter } = require('./contentRouter');
 const { getContentType } = utils;
@@ -18,15 +19,23 @@ const createCreateOne = root =>
       ...req.body,
       id: newId,
     };
-    const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
+    const relativeItemPath = `${contentType}/${newId}.json`;
+    const itemPath = `${root}/${relativeItemPath}`;
     const newDirPath = path.resolve(root, `${req.body.type.toLowerCase()}`);
+
     await Promise.all([utils.save(itemPath, newContentType, utils.ensureDir(newDirPath))]);
+
+    await gitUtils.commit([itemPath], {
+      message: `Flatlify created file: ${relativeItemPath}`,
+    });
 
     res.send(newContentType);
   };
 
 async function update(root, itemId, contentType, updateParams) {
-  const contentPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
+  const relativeContentPath = `${contentType}/${itemId}.json`;
+  const contentPath = `${root}/${relativeContentPath}`;
+
   const item = await utils.read(contentPath);
   const newItem = {
     ...item,
@@ -36,11 +45,15 @@ async function update(root, itemId, contentType, updateParams) {
   if (updateParams.type) {
     const contentFolderPath = path.resolve(root, 'content', item.type.toLowerCase());
     const newContentFolderPath = path.resolve(root, 'content', updateParams.type.toLowerCase());
-
     utils.ensureDir(contentFolderPath);
     await fs.rename(contentFolderPath, newContentFolderPath);
   }
   await utils.save(contentPath, newItem);
+
+  await gitUtils.commit([contentPath], {
+    message: `Flatlify updated file: ${relativeContentPath}`,
+  });
+
   return newItem;
 }
 
@@ -69,9 +82,16 @@ const createUpdateMany = root =>
   };
 
 async function deleteItem(root, contentType, itemId) {
-  const contentItemPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
+  const relativeItemPath = `${contentType}/${itemId}.json`;
+  const contentItemPath = `${root}/${relativeItemPath}`;
+
   const { type } = await utils.read(contentItemPath);
   const contentFolderPath = path.resolve(root, `${type.toLowerCase()}`);
+
+  await gitUtils.commit([contentItemPath], {
+    message: `Flatlify deleted file: ${relativeItemPath}`,
+    remove: true,
+  });
 
   await Promise.all([utils.remove(contentItemPath), utils.remove(contentFolderPath)]);
   return {};

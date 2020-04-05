@@ -5,7 +5,6 @@ const cors = require('cors');
 const path = require('path');
 const { router: contentRouter } = require('./contentRouter');
 const { router: contentTypesRouter } = require('./contentTypesRouter');
-const gitRouter = require('./gitRouter');
 
 const app = express();
 const port = parseInt(process.env.PORT, 10) || 3020;
@@ -17,8 +16,6 @@ app.use(cors());
 
 const contentTypesRoot = path.resolve(root, 'server/db');
 app.use('/content-types', contentTypesRouter(contentTypesRoot));
-
-app.use('/modified-files', gitRouter(root));
 
 const contentRoot = path.resolve(root, 'server/db/content');
 app.use('/content', contentRouter({}, contentRoot));
