@@ -1,0 +1,31 @@
+{
+  "type": "Season",
+  "fields": [
+    {
+      "fieldType": "TextInput",
+      "title": "Season title",
+      "isRequired": true,
+      "_gridDisplay_": true
+    },
+    {
+      "fieldType": "TextInput",
+      "title": "Season #",
+      "isRequired": true,
+      "_gridDisplay_": true
+    },
+    {
+      "fieldType": "ImageInput",
+      "title": "Cover",
+      "accept": "image/*",
+      "multiple": true
+    },
+    {
+      "fieldType": "ReferenceArrayInput",
+      "title": "Episodes",
+      "refTypeId": 1,
+      "displayValue": "Title",
+      "isRequired": true
+    }
+  ],
+  "id": 4
+}
