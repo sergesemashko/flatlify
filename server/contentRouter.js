@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const utils = require('./utils');
 const { orderBy, slice } = require('lodash');
+const gitUtils = require('./git-utils');
 const { getContentType } = utils;
 const { upload, extractFilesMeta, fileFieldsAppendSrc } = require('./utils/media');
 const uploadMiddleware = upload.any();
@@ -41,13 +42,20 @@ const createGetOneBase = root =>
   };
 
 async function update(root, itemId, contentType, updateParams) {
-  const contentPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
+  const relativeContentPath = `${contentType}/${itemId}.json`;
+  const contentPath = `${root}/${relativeContentPath}`;
+
   const item = await utils.read(contentPath);
   const newItem = {
     ...item,
     ...updateParams,
   };
+
   await utils.save(contentPath, newItem);
+
+  await gitUtils.commit([contentPath], {
+    message: `Flatlify updated file: ${relativeContentPath}`,
+  });
   return newItem;
 }
 
@@ -87,16 +95,29 @@ const createCreateOneBase = root =>
     const newId = items.length ? parseInt(items[items.length - 1].id, 10) + 1 : 0;
     const newContentType = { ...req.body, ...extractFilesMeta(req.files), id: newId };
 
-    const itemPath = path.resolve(root, `${contentType}`, `${newId}.json`);
+    const relativeItemPath = `${contentType}/${newId}.json`;
+    const itemPath = `${root}/${relativeItemPath}`;
+
     await utils.save(itemPath, newContentType);
+
+    await gitUtils.commit([itemPath], {
+      message: `Flatlify created file: ${relativeItemPath}`,
+    });
 
     res.send(newContentType);
   };
 
 async function deleteItem(root, contentType, itemId) {
-  const contentItemPath = path.resolve(root, `${contentType}`, `${itemId}.json`);
+  const relativeItemPath = `${contentType}/${itemId}.json`;
+  const contentItemPath = `${root}/${relativeItemPath}`;
 
   await utils.remove(contentItemPath);
+
+  await gitUtils.commit([contentItemPath], {
+    message: `Flatlify deleted file: ${relativeItemPath}`,
+    remove: true,
+  });
+
   return {};
 }
 
