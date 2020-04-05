@@ -113,7 +113,7 @@ const createCRUDComponents = contentTypeSettings => {
 
         return (
           <ReferenceField label={fieldConfig.displayValue} source={source} reference={type}>
-            <TextField source={fieldConfig.displayValue} />
+            <TextField source={fieldConfig.displayValue.toLowerCase()} />
           </ReferenceField>
         );
       }
@@ -123,7 +123,7 @@ const createCRUDComponents = contentTypeSettings => {
         return (
           <ReferenceArrayField label={fieldConfig.displayValue} source={source} reference={type}>
             <SingleFieldList>
-              <ChipField source={fieldConfig.displayValue} />
+              <ChipField source={fieldConfig.displayValue.toLowerCase()} />
             </SingleFieldList>
           </ReferenceArrayField>
         );

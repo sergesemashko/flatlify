@@ -17,7 +17,7 @@ export const _ReferenceInput = props => {
 
     return (
       <ReferenceInput reference={type} source={source}>
-        <SelectInput allowEmpty optionText={displayValue} label="Content Type" />
+        <SelectInput allowEmpty optionText={displayValue.toLowerCase()} label="Content Type" />
       </ReferenceInput>
     );
   }
@@ -34,7 +34,7 @@ export const _ReferenceArrayInput = props => {
 
     return (
       <ReferenceArrayInput reference={type} source={source}>
-        <SelectArrayInput optionText={displayValue} label="Content Types" />
+        <SelectArrayInput optionText={displayValue.toLowerCase()} label="Content Types" />
       </ReferenceArrayInput>
     );
   }
