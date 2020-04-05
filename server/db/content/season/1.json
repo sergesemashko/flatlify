@@ -1,12 +1,19 @@
 {
   "seasonTitle": "The Voice Season 18",
   "season": "18",
-  "cast": "1,0,2,3,4",
+  "cast": [
+    1,
+    0,
+    2,
+    3,
+    4
+  ],
   "cover": {
     "relativeSrc": "/public/uploads/2020/4/5/TheVoice-S18-Logo-1920x1080-1586122702628-448518999.jpg",
     "filename": "TheVoice-S18-Logo-1920x1080-1586122702628-448518999.jpg",
     "size": 179396,
-    "mimetype": "image/jpeg"
+    "mimetype": "image/jpeg",
+    "src": "http://localhost:3020/public/uploads/2020/4/5/TheVoice-S18-Logo-1920x1080-1586122702628-448518999.jpg"
   },
   "id": 1
 }
