@@ -19,6 +19,7 @@ import ImageInput from '../components/ImageInput';
 import { _ReferenceInput, _ReferenceArrayInput } from '../components/ReferenceInput';
 import { contentTypesSelector } from '../../selectors/adminSelectors';
 import { useSelector } from 'react-redux';
+import { camelize } from '../../utils/string';
 
 const getFieldComponent = type => {
   switch (type) {
@@ -50,11 +51,7 @@ const createCRUDComponents = contentTypeSettings => {
             <FieldComponent
               key={i}
               label={title}
-              source={
-                S(title)
-                  .slugify()
-                  .camelize().s
-              }
+              source={camelize(title)}
               validate={isRequired ? required() : undefined}
               {...fieldConfig}
             />
@@ -103,9 +100,7 @@ const createCRUDComponents = contentTypeSettings => {
   };
 
   function getField(fieldConfig, contentTypes) {
-    const source = S(fieldConfig.title)
-      .slugify()
-      .camelize().s;
+    const source = camelize(fieldConfig.title);
 
     switch (fieldConfig.fieldType) {
       case 'ReferenceInput': {
@@ -113,7 +108,7 @@ const createCRUDComponents = contentTypeSettings => {
 
         return (
           <ReferenceField label={fieldConfig.displayValue} source={source} reference={type}>
-            <TextField source={fieldConfig.displayValue} />
+            <TextField source={camelize(fieldConfig.displayValue)} />
           </ReferenceField>
         );
       }
@@ -123,7 +118,7 @@ const createCRUDComponents = contentTypeSettings => {
         return (
           <ReferenceArrayField label={fieldConfig.displayValue} source={source} reference={type}>
             <SingleFieldList>
-              <ChipField source={fieldConfig.displayValue} />
+              <ChipField source={camelize(fieldConfig.displayValue)} />
             </SingleFieldList>
           </ReferenceArrayField>
         );
