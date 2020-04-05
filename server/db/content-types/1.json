@@ -1,18 +1,1 @@
-{
-  "type": "Episode",
-  "fields": [
-    { "fieldType": "TextInput", "title": "Title", "isRequired": true, "_gridDisplay_": true },
-    { "fieldType": "TextInput", "title": "Episode Number", "isRequired": true },
-    { "fieldType": "RichTextInput", "title": "Description" },
-    { "fieldType": "ImageInput", "title": "Cover", "accept": "image/*" },
-    {
-      "fieldType": "ReferenceInput",
-      "title": "Video",
-      "isRequired": true,
-      "refTypeId": 0,
-      "displayValue": "Title",
-      "accept": "image/*"
-    }
-  ],
-  "id": 1
-}
+{"type":"Episode","fields":[{"fieldType":"TextInput","title":"Title","isRequired":true,"_gridDisplay_":true},{"fieldType":"TextInput","title":"Episode Number","isRequired":true},{"fieldType":"RichTextInput","title":"Description"},{"fieldType":"ImageInput","title":"Cover","accept":"image/*"}],"id":1}
