@@ -48,13 +48,15 @@ const createCRUDComponents = contentTypeSettings => {
         {contentTypeSettings.fields.map(({ isRequired, title, fieldType, ...fieldConfig }, i) => {
           const FieldComponent = getFieldComponent(fieldType);
           return (
-            <FieldComponent
-              key={i}
-              label={title}
-              source={camelize(title)}
-              validate={isRequired ? required() : undefined}
-              {...fieldConfig}
-            />
+            <div>
+              <FieldComponent
+                key={i}
+                label={title}
+                source={camelize(title)}
+                validate={isRequired ? required() : undefined}
+                {...fieldConfig}
+              />
+            </div>
           );
         })}
       </>

@@ -7,7 +7,7 @@ function ensureDir(dir) {
 }
 
 function save(filepath, json) {
-  return fse.outputJson(filepath, json);
+  return fse.outputJson(filepath, json, { spaces: '  ' });
 }
 
 function read(filepath) {
