@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs').promises;
-const utils = require('./utils');
 const gitUtils = require('./git-utils');
+const utils = require('./utils/common');
 const { router: baseRouter } = require('./contentRouter');
 const { getContentType } = utils;
 const { createGetOneBase, createGetManyBase } = require('./contentRouter');
@@ -12,7 +12,9 @@ const createCreateOne = root =>
 
     const contentPath = path.resolve(root, `${contentType}`);
     const items = await utils.readCollectionList(contentPath);
-    const newId = items.length ? items[items.length - 1].id + 1 : 0;
+
+    const newId = utils.getNewIdFromDatabaseItems(items);
+
     const newContentType = {
       ...req.body,
       id: newId,

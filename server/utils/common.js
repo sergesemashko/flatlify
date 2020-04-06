@@ -7,7 +7,7 @@ function ensureDir(dir) {
 }
 
 function save(filepath, json) {
-  return fse.outputJson(filepath, json);
+  return fse.outputJson(filepath, json, { spaces: '  ' });
 }
 
 function read(filepath) {
@@ -62,6 +62,17 @@ function getContentType(req) {
   return contentType;
 }
 
+function getNewIdFromDatabaseItems(items) {
+  if (items.length === 0) {
+    return 0;
+  }
+  if (items.length === 1) {
+    return Number(items[0].id) + 1;
+  }
+  const maxId = Math.max(...items.map(item => Number(item.id)));
+  return maxId + 1;
+}
+
 module.exports = {
   ensureDir,
   readCollections,
@@ -70,4 +81,5 @@ module.exports = {
   read,
   remove,
   getContentType,
+  getNewIdFromDatabaseItems,
 };
