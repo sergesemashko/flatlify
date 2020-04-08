@@ -25,6 +25,12 @@
       "refTypeId": 1,
       "displayValue": "Title",
       "isRequired": true
+    },
+    {
+      "fieldType": "ReferenceArrayInput",
+      "title": "Cast",
+      "refTypeId": 2,
+      "displayValue": "Full name"
     }
   ],
   "id": 4

@@ -1,12 +1,17 @@
 {
   "seasonTitle": "Jimmy Fallon Season 7",
   "season": "7",
-  "episodes": "0,1",
+  "episodes": [
+    0,
+    "1",
+    2
+  ],
   "cover": {
     "relativeSrc": "/public/uploads/2020/4/4/200327_4140639_Adam_Sandler__Jessica_Alba-1586055192213-944293984.jpg",
     "filename": "200327_4140639_Adam_Sandler__Jessica_Alba-1586055192213-944293984.jpg",
     "size": 10858,
-    "mimetype": "image/jpeg"
+    "mimetype": "image/jpeg",
+    "src": "http://localhost:3020/public/uploads/2020/4/4/200327_4140639_Adam_Sandler__Jessica_Alba-1586055192213-944293984.jpg"
   },
   "id": 0
 }
