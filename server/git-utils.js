@@ -1,3 +1,5 @@
+const path = require('path');
+
 const isoGit = require('isomorphic-git');
 const fs = require('fs');
 isoGit.plugins.set('fs', fs);
@@ -30,16 +32,35 @@ async function checkout(branch, pattern = null, root) {
 }
 
 // git commit multiple files
-async function commit(files, { message, root, author = {} } = {}) {
-  for (let i = 0; i < files.length; i++) {
-    await isoGit.add({ dir: root || './', filepath: decodeURIComponent(files[i]) });
-  }
+async function commit(
+  filePaths = [],
+  {
+    message,
+    gitRepositoryRoot = path.resolve(__dirname, '..'),
+    author = {
+      name: 'flatlify',
+      email: 'email',
+    },
+    remove = false,
+  } = {},
+) {
+  const gitAddPromises = filePaths.map(async filepath => {
+    const relativeFilePath = path.relative(gitRepositoryRoot, filepath);
+
+    if (!remove) {
+      await isoGit.add({ dir: gitRepositoryRoot, filepath: relativeFilePath });
+    } else {
+      await isoGit.remove({ dir: gitRepositoryRoot, filepath: relativeFilePath });
+    }
+  });
+
+  await Promise.all(gitAddPromises);
 
   let sha = await isoGit.commit({
-    dir: root,
+    dir: gitRepositoryRoot,
     author: {
-      name: author.name || undefined,
-      email: author.email || undefined,
+      name: author.name,
+      email: author.email,
     },
     message,
   });

@@ -48,7 +48,6 @@ function Resources() {
     <AdminUI>
       {[
         <Resource key="content-types" name="content-types" {...contentTypesActions} />,
-        <Resource key="modified-files" name="modified-files" {...modifiedFilesActions} />,
         ...resources,
       ]}
     </AdminUI>

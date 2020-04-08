@@ -4,6 +4,7 @@ import { ReferenceInput, SelectInput, SelectArrayInput, ReferenceArrayInput } fr
 import { contentTypesSelector } from '../../selectors/adminSelectors';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-final-form';
+import { camelize } from '../../utils/string';
 
 export const _ReferenceInput = props => {
   const { refTypeId, source, displayValue } = props;
@@ -17,7 +18,7 @@ export const _ReferenceInput = props => {
 
     return (
       <ReferenceInput reference={type} source={source}>
-        <SelectInput allowEmpty optionText={displayValue.toLowerCase()} label="Content Type" />
+        <SelectInput allowEmpty optionText={camelize(displayValue)} label={contentType.type} />
       </ReferenceInput>
     );
   }
@@ -31,10 +32,9 @@ export const _ReferenceArrayInput = props => {
     return <> </>;
   } else {
     const type = contentType.type.toLowerCase();
-
     return (
       <ReferenceArrayInput reference={type} source={source}>
-        <SelectArrayInput optionText={displayValue.toLowerCase()} label="Content Types" />
+        <SelectArrayInput optionText={camelize(displayValue)} label={contentType.type} />
       </ReferenceArrayInput>
     );
   }
