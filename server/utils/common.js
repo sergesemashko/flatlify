@@ -1,7 +1,8 @@
 const path = require('path');
 const fs = require('fs').promises;
 const fse = require('fs-extra');
-
+const recursive = require('@aboviq/readdir-recursive');
+const pick = require('lodash/pick');
 function ensureDir(dir) {
   return fse.ensureDir(dir);
 }
@@ -16,6 +17,18 @@ function read(filepath) {
 
 function remove(filepath) {
   return fse.remove(filepath);
+}
+async function listFilesRecursive(dir) {
+  const files = await recursive(dir, {
+    transform: (file, path, stats) => {
+      return {
+        file,
+        path,
+        stats: pick(stats, ['birthtimeMs', 'size']),
+      };
+    },
+  });
+  return files;
 }
 
 async function readCollectionList(dirname) {
@@ -80,6 +93,7 @@ module.exports = {
   save,
   read,
   remove,
+  listFilesRecursive,
   getContentType,
   getNewIdFromDatabaseItems,
 };
